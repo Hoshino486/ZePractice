@@ -105,7 +105,10 @@ public sealed class ServerDiagnosticsService(ZePracticePlugin plugin) : IDisposa
                 catch(Exception e){_memory=null;Log(e,"process memory");}
             }
             _reading=new(all,networked,players.Count(ZePracticePlugin.IsRealPlayer),players.Count(p=>p.IsBot&&!p.IsHLTV),_memory,now,native,status,_scripts.Sample(scripts));
-            if(!_resources.Ready || !_sessions.Values.Any(s=>s.Enabled)){RemoveHud();return;}
+            // Keep the shared HUD entity alive for the whole map: deleting a custom_hud_layout
+            // does not remove the already replicated Panorama layout on clients, so a later
+            // "off" left a stale panel on screen. Visibility is a per-player "hidden" class.
+            if(!_resources.Ready){RemoveHud();return;}
             if(now>=_retryAt)Render();
         }
         catch(Exception e){Log(e,"sampling/render");RemoveHud();_retryAt=now+5;}
@@ -150,14 +153,14 @@ public sealed class ServerDiagnosticsService(ZePracticePlugin plugin) : IDisposa
     }
     private void RemoveHud()
     { if(_hud is {IsValid:true})_hud.Remove();_hud=null;_text.Clear();_colors.Clear();_visibility.Clear(); }
-    private bool VisibleTo(CCSPlayerController? p) =>
-        p is {IsValid:true} && _sessions.TryGetValue(p.Slot,out var s) && Owns(s,p) && s.Enabled;
     private void Transmit(CCheckTransmitInfoList list)
     {
         if(!_active || _disposed || _hud is not {IsValid:true} hud)return;
         foreach(var (info,p) in list)
         {
-            if(VisibleTo(p))info.TransmitEntities.Add(hud);
+            // Transmit to every tracked session, enabled or not: the per-player "hidden" class
+            // needs the layout to exist client-side, otherwise "!ze_diag off" cannot hide it.
+            if(p is {IsValid:true} && _sessions.TryGetValue(p.Slot,out var s) && Owns(s,p))info.TransmitEntities.Add(hud);
             else info.TransmitEntities.Remove(hud);
         }
     }
