@@ -13,7 +13,7 @@ namespace ZePractice;
 public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePracticeConfig>
 {
     public override string ModuleName => "ZE Practice · FYS Config Adapter";
-    public override string ModuleVersion => "1.7.23";
+    public override string ModuleVersion => "1.7.24";
     public override string ModuleAuthor => "Local ZE Server";
     public override string ModuleDescription => "无奖励的 ZE 跑图、管理、Boss、地图翻译与 FYS 配置兼容";
     public ZePracticeConfig Config { get; set; } = new();
@@ -35,7 +35,7 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
     private ServerPlayerModelService? _serverModels;
     private MovementHudService? _movementHud;
     private ServerDiagnosticsService? _serverDiagnostics;
-    private PlayerPlateService? _plates;
+    private ViewerPlateService? _plates;
     private TeammateTagService? _teammateTags;
     public bool DiagnosticsHudEnabled(CCSPlayerController p) => _serverDiagnostics?.Enabled(p) ?? true;
     private PracticeBotService? _practiceBots;
@@ -116,7 +116,7 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
         _serverModels = new(this); _serverModels.Initialize();
         _movementHud = new(this); _movementHud.Initialize();
         _serverDiagnostics = new(this); _serverDiagnostics.Initialize();
-        _plates = new(this); _plates.Initialize();
+        _plates = new ViewerPlateService(this); _plates.Initialize();
         _teammateTags = new(this); _teammateTags.Initialize();
         _workshopUpdates = new(this); _workshopUpdates.Initialize();
         RegisterListener<Listeners.OnMapStart>(StartMap);
