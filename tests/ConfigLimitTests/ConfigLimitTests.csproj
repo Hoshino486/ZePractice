@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <CssApiDir Condition="'$(CssApiDir)'==''">E:\mapper\chana\steamapps\common\Counter-Strike Global Offensive\game\csgo\addons\counterstrikesharp\api</CssApiDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../src/ZePracticeConfig.cs" Link="ZePracticeConfig.cs" />
+    <Compile Include="../../src/ArtifactResetLogic.cs" Link="ArtifactResetLogic.cs" />
+    <Reference Include="CounterStrikeSharp.API"><HintPath>$(CssApiDir)\CounterStrikeSharp.API.dll</HintPath><Private>true</Private></Reference>
+  </ItemGroup>
+</Project>

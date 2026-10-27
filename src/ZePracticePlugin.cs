@@ -13,7 +13,7 @@ namespace ZePractice;
 public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePracticeConfig>
 {
     public override string ModuleName => "ZE Practice · FYS Config Adapter";
-    public override string ModuleVersion => "1.7.12";
+    public override string ModuleVersion => "1.7.13";
     public override string ModuleAuthor => "Local ZE Server";
     public override string ModuleDescription => "无奖励的 ZE 跑图、管理、Boss、地图翻译与 FYS 配置兼容";
     public ZePracticeConfig Config { get; set; } = new();
@@ -79,7 +79,7 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
         if (!Regex.IsMatch(config.ServerNumber, "^[0-9]{1,8}$")) throw new InvalidDataException("ServerNumber must be numeric.");
         config.HudIntervalSeconds = Math.Clamp(config.HudIntervalSeconds, 0.2f, 5f);
         config.RespawnDelaySeconds = Math.Clamp(config.RespawnDelaySeconds, 0.1f, 30f);
-        config.DefaultHealth = Math.Clamp(config.DefaultHealth, 1, 10000);
+        config.DefaultHealth = Math.Clamp(config.DefaultHealth, 1, 1000000);
         config.PublicGameplay ??= new();
         config.PublicGameplay.Validate();
         config.MapVote ??= new(); config.MapVote.Validate();

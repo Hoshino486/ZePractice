@@ -143,11 +143,11 @@ public sealed class PublicGameplayOptions
         if (ZombieKnifeItems == null || ZombieKnifeItems.Any(pair => string.IsNullOrWhiteSpace(pair.Key) ||
             pair.Value == null || pair.Value.Any(string.IsNullOrWhiteSpace)))
             throw new InvalidDataException("PublicGameplay.ZombieKnifeItems requires map keys and exact entity names.");
-        if (ZombieHealth is < 1 or > 1000000 || ZombieArmor is < 0 or > 100000 ||
-            HumanHealthLimit is < 1 or > 1000000 || HumanArmorLimit is < 0 or > 100000 ||
+        if (ZombieHealth is < 1 or > 1000000 || ZombieArmor is < 0 or > 1000000 ||
+            HumanHealthLimit is < 1 or > 1000000 || HumanArmorLimit is < 0 or > 1000000 ||
             Money is < 0 or > 1000000 || ReserveAmmo is < 1 or > 999 ||
             !float.IsFinite(RegenerationDelaySeconds) || RegenerationDelaySeconds is < 0 or > 300 ||
-            HealthRegenerationPerSecond is < 1 or > 1000000 || ArmorRegenerationPerSecond is < 1 or > 100000 ||
+            HealthRegenerationPerSecond is < 1 or > 1000000 || ArmorRegenerationPerSecond is < 1 or > 1000000 ||
             !float.IsFinite(DroppedGunLifetimeSeconds) || DroppedGunLifetimeSeconds is < 1 or > 3600 ||
             MaximumRoundMinutes is < 1 or > 1440)
             throw new InvalidDataException("PublicGameplay contains an invalid server limit.");
