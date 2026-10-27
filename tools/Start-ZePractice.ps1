@@ -159,7 +159,7 @@ if(Test-Path -LiteralPath $nativeLog){Move-Item -LiteralPath $nativeLog -Destina
 [IO.File]::WriteAllText($log,'',$utf8)
 New-Item -ItemType HardLink -Path $nativeLog -Value $log|Out-Null
 Write-ZeRconConfig -Path (Join-Path $game 'csgo\cfg\ze-practice\rcon.generated.cfg') -Password ([string]$settings.RconPassword)
-$arguments='-dedicated -insecure -console -usercon '+$addonArg+' -consolelog_append -con_logfile "'+$nativeLog+'" -ip '+$settings.BindAddress+' -port '+$port+' +servercfgfile '+$serverConfig+' +game_alias casual +exec ze-practice/rcon.generated.cfg +exec '+$serverConfig+' +'+$initialMapCommand
+$arguments='-dedicated -insecure -console -usercon '+$addonArg+' -consolelog_append -con_logfile "'+$nativeLog+'" -ip '+$settings.BindAddress+' -port '+$port+' +maxplayers 64 +servercfgfile '+$serverConfig+' +game_alias casual +exec ze-practice/rcon.generated.cfg +exec '+$serverConfig+' +'+$initialMapCommand
 $processArgs=@{FilePath=$exe;WorkingDirectory=$bin;ArgumentList=$arguments;PassThru=$true}
 if($Hidden){$processArgs.WindowStyle='Hidden'}
 # Interactive startup deliberately keeps native console handles. Redirection makes some CS2 console windows blank.

@@ -45,6 +45,8 @@ public sealed partial class PracticeBotService(ZePracticePlugin plugin) : IDispo
         public bool Finished, Executing;
         public string LastAttacker = "地图/环境";
         public double RespawnAt;
+        public double LastDamageAt;
+        public double NextRegenAt;
     }
     private PracticeBotOptions Options => plugin.Config.PracticeBots;
     private PracticeIdentity Identity(CCSPlayerController p) => new(p.Slot, p.EntityHandle.Raw, p.UserId,_connections.GetValueOrDefault(p.Slot));
@@ -147,7 +149,7 @@ public sealed partial class PracticeBotService(ZePracticePlugin plugin) : IDispo
         try
         {
             var created=Utilities.GetPlayers().Where(p=>p.IsBot && !_spawnBefore.Contains(Identity(p))).ToArray();
-            if (created.Length!=1) { _roster.Retire(e,Server.CurrentTime); plugin.Reply(Resolve(e.Owner),$"Bot #{e.Id} 创建未成功（引擎槽位/队伍限制），额度已释放。"); return; }
+            if (created.Length!=1) { _roster.Retire(e,Server.CurrentTime); _roster.Drop(e); plugin.Reply(Resolve(e.Owner),$"Bot #{e.Id} 创建未成功（引擎槽位/队伍限制），额度已释放。"); return; }
             var bot=created[0];
             bot.PlayerName=e.Name; Utilities.SetStateChanged(bot,"CBasePlayerController","m_iszPlayerName");
             // On reused engine slots the final userid/controller serial may settle AFTER bot_add returns.
@@ -202,6 +204,27 @@ public sealed partial class PracticeBotService(ZePracticePlugin plugin) : IDispo
         plugin.Reply(p,$"已处死/取消自己的 {selected.Length} 个 Bot。");
     }
     private static void Teleport(CCSPlayerPawn pawn, PracticePlacement placement) => pawn.Teleport(placement.Position,placement.Angles,Vector3.Zero);
+    private void Regenerate(PracticeBotRoster.Entry e, LiveBot live, CCSPlayerPawn pawn, double now)
+    {
+        var options = plugin.Config.PublicGameplay;
+        if (now < live.LastDamageAt + options.RegenerationDelaySeconds || now < live.NextRegenAt) return;
+        live.NextRegenAt = now + 1;
+        int health = Math.Min(e.Placement.Health, pawn.Health + options.HealthRegenerationPerSecond);
+        int armor = Math.Min(e.Placement.Armor, pawn.ArmorValue + options.ArmorRegenerationPerSecond);
+        if (health == pawn.Health && armor == pawn.ArmorValue) return;
+        if (health != pawn.Health) pawn.Health = health;
+        if (armor != pawn.ArmorValue)
+        {
+            pawn.ArmorValue = armor;
+            Utilities.SetStateChanged(pawn, "CCSPlayerPawn", "m_ArmorValue");
+        }
+        if (live.Player.PawnArmor != armor)
+        {
+            live.Player.PawnArmor = armor;
+            Utilities.SetStateChanged(live.Player, "CCSPlayerController", "m_iPawnArmor");
+        }
+        live.Stats?.Observe(pawn.Health, pawn.ArmorValue);
+    }
     private void InitializePawn(PracticeBotRoster.Entry e, LiveBot live)
     {
         if (live.Player.PlayerPawn.Value is not { IsValid:true, Health: > 0 } pawn || !live.Player.PawnIsAlive) return;
@@ -221,12 +244,13 @@ public sealed partial class PracticeBotService(ZePracticePlugin plugin) : IDispo
         pawn.TakesDamage = true;
         if (pawn.ItemServices?.As<CCSPlayer_ItemServices>() is { } item) item.HasHelmet = e.Placement.Team == 2;
         live.Player.PawnHasHelmet = e.Placement.Team == 2; live.Player.PawnArmor = e.Placement.Armor;
-        Utilities.SetStateChanged(pawn,"CBaseEntity","m_iHealth"); Utilities.SetStateChanged(pawn,"CBaseEntity","m_iMaxHealth");
+        // m_iHealth/m_iMaxHealth are not networked; SetStateChanged on them only logs CS# warnings.
         Utilities.SetStateChanged(pawn,"CCSPlayerPawn","m_ArmorValue"); Utilities.SetStateChanged(pawn,"CBasePlayerPawn","m_pItemServices");
         Utilities.SetStateChanged(live.Player,"CCSPlayerController","m_bPawnHasHelmet"); Utilities.SetStateChanged(live.Player,"CCSPlayerController","m_iPawnArmor");
         Teleport(pawn,e.Placement); HoldPosition(pawn);
         live.Stats = new(pawn.Health,pawn.ArmorValue,Server.CurrentTime);
-        plugin.Reply(Resolve(e.Owner),$"Bot #{e.Id} 已放置；HP {pawn.Health} / 甲 {pawn.ArmorValue}；死亡即移除，不回血、不复活。");
+        live.LastDamageAt = Server.CurrentTime; live.NextRegenAt = 0;
+        plugin.Reply(Resolve(e.Owner),$"Bot #{e.Id} 已放置；HP {pawn.Health} / 甲 {pawn.ArmorValue}；受伤后停火 {plugin.Config.PublicGameplay.RegenerationDelaySeconds:0.#}s 开始回血回甲。");
     }
     private static void HoldPosition(CCSPlayerPawn pawn)
     {
@@ -290,6 +314,7 @@ public sealed partial class PracticeBotService(ZePracticePlugin plugin) : IDispo
                 if (p.PlayerPawn.Value is { IsValid:true } pawn)
                 {
                     if (live.Pawn != 0 && (!p.PawnIsAlive || pawn.Health <= 0)) { Finish(e,live,"死亡",true); continue; }
+                    Regenerate(e,live,pawn,now);
                     HoldPosition(pawn); live.Stats?.Sample(now,pawn.VelocityModifier);
                 }
             }
@@ -316,6 +341,7 @@ public sealed partial class PracticeBotService(ZePracticePlugin plugin) : IDispo
     {
         if (ev.Userid is not { IsValid:true } p || _roster.ByBot(Identity(p)) is not { Retired:false } e || !_live.TryGetValue(e.Id,out var live) || live.Finished || live.Executing) return HookResult.Continue;
         var pawn = p.PlayerPawn.Value;
+        live.LastDamageAt = Server.CurrentTime;
         live.Stats?.Hurt(pawn?.Health ?? ev.Health,pawn?.ArmorValue ?? ev.Armor,ev.DmgHealth,ev.Hitgroup == 1,Server.CurrentTime,pawn?.VelocityModifier ?? 1);
         live.LastAttacker = ev.Attacker is { IsValid:true } attacker ? ZePanelLogic.Text(attacker.PlayerName,40) : "地图/环境";
         return HookResult.Continue;
@@ -361,6 +387,8 @@ public sealed partial class PracticeBotService(ZePracticePlugin plugin) : IDispo
                 Utilities.GetPlayerFromSlot(pending.Key) is { IsValid:true, IsBot:true } created)
                 DisconnectBot(created,Identity(created));
         }
+        // Free the number so the next placement reuses it (1,2,3...) instead of growing forever.
+        _roster.Drop(e);
         MaintainQuota();
     }
     private void DisconnectBot(CCSPlayerController p, PracticeIdentity id)

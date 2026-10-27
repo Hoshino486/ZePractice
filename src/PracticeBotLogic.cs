@@ -21,7 +21,6 @@ public sealed class PracticeBotRoster
     }
     private readonly Dictionary<long, Entry> _entries = new();
     private readonly string _prefix = "ZEPB_" + Guid.NewGuid().ToString("N")[..8] + "_";
-    private long _sequence;
     public IEnumerable<Entry> Entries => _entries.Values.Where(e => !e.Retired);
     public static int Opponent(int team) => team == 3 ? 2 : team == 2 ? 3 : 0;
     public static bool TryResolveTeam(int ownerTeam, string? choice, out int team)
@@ -43,7 +42,9 @@ public sealed class PracticeBotRoster
     {
         if (placement.Team is not (2 or 3) || placement.Health < 1 || !double.IsFinite(now) ||
             !Finite(placement.Position) || !Finite(placement.Angles) || (!serverOwner && Owned(owner).Count() >= limit)) return null;
-        long id = ++_sequence;
+        // Reuse the lowest free number so deleting/killing a bot frees its number immediately.
+        long id = 1;
+        while (_entries.ContainsKey(id)) id++;
         return _entries[id] = new(id, _prefix + id, owner, placement, now);
     }
     private static bool Finite(Vector3 v) => float.IsFinite(v.X) && float.IsFinite(v.Y) && float.IsFinite(v.Z);
@@ -54,6 +55,8 @@ public sealed class PracticeBotRoster
     private static bool BindOnce(Entry entry, PracticeIdentity bot) { entry.Bot = bot; return true; }
     public void Retire(Entry entry, double now = 0)
     { if (!entry.Retired) { entry.Retired = true; entry.RetiredAt = now; } }
+    /// <summary>Drop a retired entry so its number becomes available again on the next reserve.</summary>
+    public void Drop(Entry entry) => _entries.Remove(entry.Id);
     public void PruneRetired(double requestedBefore)
     {
         foreach (var id in _entries.Where(pair => pair.Value.Retired && pair.Value.RetiredAt < requestedBefore).Select(pair => pair.Key).ToArray())
@@ -92,6 +95,12 @@ public sealed class PracticeBotStatistics(int health, int armor, double now)
         Hits++; if (headshot) Headshots++;
         HasDamage |= loss > 0 || eventDamage > 0;
         Sample(time, modifier);
+    }
+    public void Observe(int actualHealth, int actualArmor)
+    {
+        // Refresh the baseline without counting a loss: used when a bot regenerates.
+        RemainingHealth = Math.Max(0, actualHealth);
+        RemainingArmor = Math.Max(0, actualArmor);
     }
     public void Sample(double time, float modifier)
     {

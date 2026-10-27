@@ -13,7 +13,7 @@ namespace ZePractice;
 public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePracticeConfig>
 {
     public override string ModuleName => "ZE Practice · FYS Config Adapter";
-    public override string ModuleVersion => "1.7.17";
+    public override string ModuleVersion => "1.7.18";
     public override string ModuleAuthor => "Local ZE Server";
     public override string ModuleDescription => "无奖励的 ZE 跑图、管理、Boss、地图翻译与 FYS 配置兼容";
     public ZePracticeConfig Config { get; set; } = new();
