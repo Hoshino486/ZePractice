@@ -40,6 +40,7 @@ public sealed class PlayerPlateService(ZePracticePlugin plugin) : IDisposable
     public void Initialize()
     {
         plugin.RegisterListener<Listeners.OnTick>(Tick);
+        plugin.RegisterListener<Listeners.CheckTransmit>(Transmit);
         plugin.RegisterListener<Listeners.OnMapEnd>(OnMapEnd);
     }
 
@@ -70,6 +71,26 @@ public sealed class PlayerPlateService(ZePracticePlugin plugin) : IDisposable
         catch (Exception error)
         {
             plugin.Logger.LogDebug(error, "Player plate update failed");
+        }
+    }
+
+    private void Transmit(CCheckTransmitInfoList list)
+    {
+        if (_disposed || !_active || _plates.Count == 0) return;
+        foreach (var (info, viewer) in list)
+        {
+            if (viewer is not { IsValid: true }) continue;
+            // Teammates keep only the native tag; observers already see everyone natively.
+            bool observer = viewer.TeamNum is not (2 or 3);
+            foreach (var (slot, plate) in _plates)
+            {
+                if (observer || viewer.TeamNum == plate.Team)
+                {
+                    if (plate.Name is { IsValid: true }) info.TransmitEntities.Remove((int)plate.Name.Index);
+                    if (plate.Health is { IsValid: true }) info.TransmitEntities.Remove((int)plate.Health.Index);
+                    if (plate.Armor is { IsValid: true }) info.TransmitEntities.Remove((int)plate.Armor.Index);
+                }
+            }
         }
     }
 
@@ -162,6 +183,7 @@ public sealed class PlayerPlateService(ZePracticePlugin plugin) : IDisposable
         _active = false;
         RemoveAll();
         plugin.RemoveListener<Listeners.OnTick>(Tick);
+        plugin.RemoveListener<Listeners.CheckTransmit>(Transmit);
         plugin.RemoveListener<Listeners.OnMapEnd>(OnMapEnd);
     }
 }

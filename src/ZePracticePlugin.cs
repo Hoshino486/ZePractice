@@ -13,7 +13,7 @@ namespace ZePractice;
 public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePracticeConfig>
 {
     public override string ModuleName => "ZE Practice · FYS Config Adapter";
-    public override string ModuleVersion => "1.7.22";
+    public override string ModuleVersion => "1.7.23";
     public override string ModuleAuthor => "Local ZE Server";
     public override string ModuleDescription => "无奖励的 ZE 跑图、管理、Boss、地图翻译与 FYS 配置兼容";
     public ZePracticeConfig Config { get; set; } = new();
@@ -36,6 +36,7 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
     private MovementHudService? _movementHud;
     private ServerDiagnosticsService? _serverDiagnostics;
     private PlayerPlateService? _plates;
+    private TeammateTagService? _teammateTags;
     public bool DiagnosticsHudEnabled(CCSPlayerController p) => _serverDiagnostics?.Enabled(p) ?? true;
     private PracticeBotService? _practiceBots;
     public bool IsPracticeBot(CCSPlayerController? p) => _practiceBots?.IsPracticeBot(p) == true;
@@ -116,6 +117,7 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
         _movementHud = new(this); _movementHud.Initialize();
         _serverDiagnostics = new(this); _serverDiagnostics.Initialize();
         _plates = new(this); _plates.Initialize();
+        _teammateTags = new(this); _teammateTags.Initialize();
         _workshopUpdates = new(this); _workshopUpdates.Initialize();
         RegisterListener<Listeners.OnMapStart>(StartMap);
         RegisterListener<Listeners.OnMapEnd>(() => { _mapGeneration++; _practiceBots?.OnMapEnd(); _movementHud?.OnMapEnd(); _serverDiagnostics?.OnMapEnd(); _plates?.OnMapEnd(); _thirdPerson?.Reset(false); _commander?.OnMapEnd(); _serverModels?.OnMapEnd(); _mapIdentity?.OnMapEnd(); _roundGuard?.OnMapEnd(); _publicGameplay?.OnMapEnd(); _mapVote?.OnMapEnd(); _mapMarkers?.OnMapEnd(); _grenadeImmunity?.OnMapEnd(); });
@@ -163,7 +165,7 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
         _mapVote?.OnMapStart(); _mapMarkers?.OnMapStart();
         _thirdPerson?.Reset(false);
         _commander?.OnMapStart(); _serverModels?.OnMapStart();
-        _movementHud?.OnMapStart(); _serverDiagnostics?.OnMapStart(); _plates?.OnMapStart();
+        _movementHud?.OnMapStart(); _serverDiagnostics?.OnMapStart(); _plates?.OnMapStart(); _teammateTags?.OnMapStart();
         // Engine/CS2Fixes map configs may execute after OnMapStart. Apply our chosen profile last.
         AddTimer(3f, () => { if (_mapGeneration == generation) { ApplyBaseFeatures(); _map?.ApplyCurrentMap(); _publicGameplay?.ReapplyRules(); if (IsPractice) Server.ExecuteCommand("mp_warmup_end"); ShowStatus(null); } }, TimerFlags.STOP_ON_MAPCHANGE);
     }
@@ -201,9 +203,9 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
         SetCvar("cs2f_infinite_reserve_ammo","0");
         SetCvar("cs2f_trigger_timer_enable","0"); // our translated countdown owns this channel
         SetCvar("cs2f_full_alltalk","1");
-        // The plugin draws its own three-line plate (name / HP / armor) above everyone,
-        // so the native team-ID tag is turned off to avoid a duplicate on teammates.
-        SetCvar("sv_teamid_overhead","0");
+        // Teammates keep the engine's native team-ID tag; the plugin plate only serves enemies.
+        SetCvar("sv_teamid_overhead","1"); SetCvar("sv_teamid_overhead_always_prohibit","0");
+        SetCvar("sv_teamid_overhead_maxdist","0"); SetCvar("sv_teamid_overhead_maxdist_spec","0");
         SetCvar("mp_autoteambalance","0"); SetCvar("mp_limitteams","0");
         SetCvar("mp_freezetime","0"); SetCvar("mp_warmuptime","5");
         // Personal bots own quota while active; never kick them during a rules refresh.
@@ -239,6 +241,7 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
         Cleanup("movement-hud", () => _movementHud?.Dispose());
         Cleanup("server-diagnostics", () => _serverDiagnostics?.Dispose());
         Cleanup("player-plates", () => _plates?.Dispose());
+        Cleanup("teammate-tags", () => _teammateTags?.Dispose());
         Cleanup("commander", () => _commander?.Dispose()); Cleanup("server-models", () => _serverModels?.Dispose());
         Cleanup("identity", () => _mapIdentity?.Dispose());
         Cleanup("immunity", () => _grenadeImmunity?.Dispose());
