@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <CssApiDir Condition="'$(CssApiDir)'==''">E:\mapper\chana\steamapps\common\Counter-Strike Global Offensive\game\csgo\addons\counterstrikesharp\api</CssApiDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\ZePanelService.cs" Link="ZePanelService.cs"/><Compile Include="Program.cs"/><Compile Include="PluginStub.cs"/>
+    <Compile Include="..\..\src\PersistentChatMenu.cs" Link="PersistentChatMenu.cs"/>
+    <Reference Include="CounterStrikeSharp.API"><HintPath>$(CssApiDir)\CounterStrikeSharp.API.dll</HintPath></Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions"><HintPath>$(CssApiDir)\Microsoft.Extensions.Logging.Abstractions.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,32 @@
+{
+  "Version": 1,
+  "CssRootBypass": true,
+  "DefaultRoles": ["player", "practicer"],
+  "Roles": {
+    "player": {
+      "Inherits": [],
+      "Immunity": 0,
+      "Allow": ["css_ze", "css_zhelp", "css_ze_status", "css_ze_whoami", "css_ze_maps", "css_zebuy", "css_zeclass", "css_zskill", "css_bosshud", "css_items", "css_ze_practice", "css_ze_commands", "css_ze_binds", "css_ze_ui", "css_ze_ui_close", "css_ze_ui_chat", "css_ze_ui_ready", "css_ze_public", "css_ze_hp", "css_ze_armor", "css_ze_noclip", "css_ze_ammo", "css_ze_bhop", "css_ze_music", "css_ze_hide", "css_ze_join", "css_ze_roundtime", "css_ze_restart", "css_ze_endround", "css_ze_workshop", "css_host_workshop_map", "css_ze_public_status"],
+      "Deny": []
+    },
+    "practicer": {
+      "Inherits": ["player"],
+      "Immunity": 0,
+      "Allow": ["css_ze_god", "css_ze_save", "css_ze_tp", "css_ze_clearcheckpoint", "css_ze_reset", "css_ze_respawn", "css_ze_goto", "css_zerefill"],
+      "Deny": []
+    },
+    "moderator": {
+      "Inherits": ["player"],
+      "Immunity": 10,
+      "Allow": ["css_zeadmin", "css_ze_adminhelp", "css_ze_kick", "css_ze_mute", "css_ze_gag", "css_ze_unmute", "css_ze_ungag", "css_ze_punishments", "css_ze_team", "css_ze_bring", "css_ze_slay", "css_ze_respawn_other"],
+      "Deny": []
+    },
+    "admin": {
+      "Inherits": ["practicer", "moderator"],
+      "Immunity": 50,
+      "Allow": ["css_ze*", "css_boss*", "css_item*", "css_zskill", "css_zhelp"],
+      "Deny": ["css_ze_permissions*", "css_ze_root*"]
+    }
+  },
+  "Users": {}
+}

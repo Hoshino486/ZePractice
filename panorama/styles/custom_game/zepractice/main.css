@@ -1,0 +1,70 @@
+/* Server-driven Custom HUD. Deliberately no web-only flex/grid, JavaScript or external assets. */
+.screen {
+    width: 100%; height: 100%;
+    font-family: "Microsoft YaHei";
+    color: #dce8ef;
+}
+.window {
+    width: 1100px; height: 830px;
+    horizontal-align: center; vertical-align: center;
+    flow-children: down;
+    background-color: gradient(linear, 0% 0%, 100% 100%, from(#101a28f5), color-stop(0.5, #111821ee), to(#09141ff5));
+    border: 1px solid #6da2b947;
+    border-radius: 16px;
+    box-shadow: #000000b0 0px 12px 42px 0px;
+    opacity: 1;
+}
+.hidden { visibility: collapse; }
+.top-accent {
+    width: 100%; height: 3px;
+    background-color: gradient(linear, 0% 0%, 100% 0%, from(#27cbe600), color-stop(0.3, #27cbe6), color-stop(0.7, #8cf3ff), to(#27cbe600));
+}
+.header { width: 100%; height: 103px; padding: 21px 30px 12px 30px; flow-children: right; }
+.brand { width: 55%; height: 100%; flow-children: down; }
+.brand-kicker { color: #5bdef1; font-family: "Arial"; font-size: 15px; font-weight: bold; letter-spacing: 4px; }
+.heading { color: #eefcff; font-size: 28px; font-weight: bold; margin-top: 5px; max-width: 560px; text-overflow: shrink; }
+.identity-block { width: 45%; height: 100%; flow-children: down; padding-top: 5px; }
+.identity { color: #acc4d6; horizontal-align: right; text-align: right; font-size: 15px; width: 100%; text-overflow: shrink; }
+.status { color: #68d8e8; horizontal-align: right; text-align: right; font-size: 17px; margin-top: 9px; width: 100%; text-overflow: shrink; }
+.tabs { height: 53px; width: 1040px; horizontal-align: center; flow-children: right; border-bottom: 1px solid #3c5569a0; }
+.tab { height: 48px; width: 148px; background-color: #16243766; border-radius: 6px 6px 0px 0px; margin-right: 1px; }
+.tab Label { horizontal-align: center; vertical-align: center; font-size: 17px; color: #8ba6ba; }
+.tab:hover { background-color: #25485fb5; }
+.tab:hover Label { color: #e8fcff; }
+.tab.active { background-color: gradient(linear, 0% 0%, 0% 100%, from(#2b718a55), to(#28c3db28)); border-bottom: 3px solid #53def1; }
+.tab.active Label { color: #82edff; font-weight: bold; }
+.state-row { width: 1040px; height: 59px; horizontal-align: center; flow-children: right; padding-top: 12px; }
+.state-chip { height: 31px; padding: 4px 13px; margin-right: 10px; border: 1px solid #425b7077; border-radius: 16px; background-color: #1e2d3b88; flow-children: right; }
+.state-chip Label { color: #91a9b9; font-size: 14px; vertical-align: center; }
+.state-chip:hover { border-color: #4ba9bc; }
+.state-chip.on { background-color: #164550a0; border-color: #3dc7ce88; }
+.state-chip.on Label { color: #86eff1; }
+.toggle-track { width: 26px; height: 14px; vertical-align: center; margin-right: 8px; background-color: #466074; border-radius: 8px; }
+.toggle-knob { width: 10px; height: 10px; margin: 2px; background-color: #a4bbca; border-radius: 6px; }
+.on .toggle-track { background-color: #259cb0; }
+.on .toggle-knob { horizontal-align: right; background-color: #a9ffff; }
+.state-dot { width: 7px; height: 7px; vertical-align: center; margin-right: 8px; background-color: #557389; border-radius: 4px; }
+.on .state-dot { background-color: #65e4e9; }
+.state-caption { color: #5e7a8e; font-size: 13px; margin-left: 16px; padding-top: 6px; }
+.cards { width: 1040px; height: 505px; horizontal-align: center; flow-children: right-wrap; }
+.card { width: 510px; height: 91px; margin: 0px 10px 10px 0px; flow-children: right; background-color: gradient(linear, 0% 0%, 100% 100%, from(#23374ca8), to(#18283788)); border: 1px solid #536f8547; border-radius: 8px; padding: 15px; }
+.card:hover { background-color: gradient(linear, 0% 0%, 100% 100%, from(#28566cc9), to(#1c3e5399)); border-color: #60cbe5aa; box-shadow: #2ed6f016 0px 0px 14px 0px; }
+.card:active { background-color: #20495dcf; }
+.card-number { width: 40px; height: 36px; margin: 4px 13px 0px 0px; font-family: "Arial"; font-size: 23px; font-weight: bold; color: #5299b4; vertical-align: center; text-align: center; }
+.card-copy { width: fill-parent-flow(1); height: 100%; flow-children: down; }
+.card-title { color: #e3edf4; font-size: 18px; height: 30px; width: 100%; text-overflow: shrink; }
+.card-hint { color: #6d9bac; font-size: 13px; margin-top: 5px; }
+.card:hover .card-hint { color: #69d8e8; }
+.card.empty { opacity: 0; }
+.disabled { opacity: 0.33; }
+.disabled:hover { brightness: 0.8; }
+.footer { width: 1040px; height: 80px; horizontal-align: center; border-top: 1px solid #384f63aa; padding-top: 14px; flow-children: right; }
+.footer-copy { width: 59%; height: 100%; flow-children: down; }
+.page { font-size: 16px; color: #b2cbdc; }
+.hint { font-size: 12px; color: #698599; margin-top: 8px; }
+.navigation { width: 41%; height: 42px; flow-children: right; }
+.nav { height: 38px; width: 130px; margin-left: 9px; border: 1px solid #496176aa; border-radius: 6px; background-color: #1f314277; }
+.nav Label { horizontal-align: center; vertical-align: center; font-size: 15px; color: #b2cedd; }
+.nav:hover { border-color: #6bcbdc; background-color: #294c60b0; }
+.nav.close { border-color: #56727daa; background-color: #253643bb; }
+.nav.close:hover { border-color: #ef8385; background-color: #713e4e99; }

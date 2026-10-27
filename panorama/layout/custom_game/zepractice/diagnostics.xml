@@ -1,0 +1,20 @@
+<root>
+  <styles><include src="s2r://panorama/styles/custom_game/zepractice/diagnostics.vcss_c" /></styles>
+  <Panel class="ze-diagnostics-screen" hittest="false">
+    <Panel id="diagnostics_window" class="ze-diagnostics-window hidden" hittest="false">
+      <Panel class="diag-row">
+        <Label class="diag-title" text="[Diagnostics] " />
+        <Label id="diag_entities" text="{s:text}" /><Label text=" Entities (" />
+        <Label id="diag_networked" text="{s:text}" /><Label text=" Networked)" />
+      </Panel>
+      <Panel class="diag-row">
+        <Label id="diag_script" text="{s:text}" />
+      </Panel>
+      <Panel class="diag-row">
+        <Label text="SV(sim) " /><Label id="diag_mean" text="{s:text}" />
+        <Label text=" (" /><Label id="diag_peak" text="{s:text}" /><Label text=" peak)  |  " />
+        <Label id="diag_detail" text="{s:text}" />
+      </Panel>
+    </Panel>
+  </Panel>
+</root>

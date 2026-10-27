@@ -1,0 +1,11 @@
+<root>
+  <styles>
+    <include src="s2r://panorama/styles/base.vcss_c" />
+    <include src="s2r://panorama/styles/hud/hudradio.vcss_c" />
+  </styles>
+  <scripts><include src="s2r://panorama/scripts/custom_game/zepractice/radio_filter.vjs_c" /></scripts>
+  <CSGOHudRadio hittest="false">
+    <Panel id="RadioPanelBG" />
+    <Panel id="RadioPanel" class="stratum-bold" />
+  </CSGOHudRadio>
+</root>

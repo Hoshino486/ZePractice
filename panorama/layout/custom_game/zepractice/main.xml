@@ -1,0 +1,118 @@
+<root>
+  <styles>
+    <include src="s2r://panorama/styles/custom_game/zepractice/main.vcss_c" />
+  </styles>
+  <Panel class="screen" hittest="false">
+    <Panel id="window" class="window hidden" hittest="true">
+      <Panel class="top-accent" hittest="false" />
+      <Panel class="header" hittest="false">
+        <Panel class="brand" hittest="false">
+          <Label class="brand-kicker" text="ZE  /  PRACTICE" />
+          <Label id="heading" class="heading" text="{s:text}" />
+        </Panel>
+        <Panel class="identity-block" hittest="false">
+          <Label id="identity" class="identity" text="{s:text}" />
+          <Label id="status" class="status" text="{s:text}" />
+        </Panel>
+      </Panel>
+      <Panel class="tabs" hittest="true">
+        <Button id="tab_main" class="tab active"><Label text="主界面" hittest="false" /></Button>
+        <Button id="tab_practice" class="tab"><Label text="跑图辅助" hittest="false" /></Button>
+        <Button id="tab_weapons" class="tab"><Label text="装备补给" hittest="false" /></Button>
+        <Button id="tab_classes" class="tab"><Label text="僵尸职业" hittest="false" /></Button>
+        <Button id="tab_items" class="tab"><Label text="神器" hittest="false" /></Button>
+        <Button id="tab_maps" class="tab"><Label text="地图" hittest="false" /></Button>
+        <Button id="tab_admin" class="tab"><Label text="管理" hittest="false" /></Button>
+      </Panel>
+      <Panel class="state-row" hittest="true">
+        <Button id="state_god" class="state-chip"><Panel class="toggle-track" hittest="false"><Panel class="toggle-knob" /></Panel><Label id="text_god" text="{s:text}" hittest="false" /></Button>
+        <Button id="state_noclip" class="state-chip"><Panel class="toggle-track" hittest="false"><Panel class="toggle-knob" /></Panel><Label id="text_noclip" text="{s:text}" hittest="false" /></Button>
+        <Panel id="state_checkpoint" class="state-chip" hittest="false"><Panel class="state-dot" /><Label id="text_checkpoint" text="{s:text}" /></Panel>
+        <Label class="state-caption" text="状态仅属于当前玩家" hittest="false" />
+      </Panel>
+      <Panel class="cards" hittest="true">
+          <Button id="option_0" class="card">
+            <Label id="card_num_0" class="card-number" text="{s:text}" hittest="false" />
+            <Panel class="card-copy" hittest="false">
+              <Label id="card_text_0" class="card-title" text="{s:text}" hittest="false" />
+              <Label id="card_hint_0" class="card-hint" text="{s:text}" hittest="false" />
+            </Panel>
+          </Button>
+          <Button id="option_1" class="card">
+            <Label id="card_num_1" class="card-number" text="{s:text}" hittest="false" />
+            <Panel class="card-copy" hittest="false">
+              <Label id="card_text_1" class="card-title" text="{s:text}" hittest="false" />
+              <Label id="card_hint_1" class="card-hint" text="{s:text}" hittest="false" />
+            </Panel>
+          </Button>
+          <Button id="option_2" class="card">
+            <Label id="card_num_2" class="card-number" text="{s:text}" hittest="false" />
+            <Panel class="card-copy" hittest="false">
+              <Label id="card_text_2" class="card-title" text="{s:text}" hittest="false" />
+              <Label id="card_hint_2" class="card-hint" text="{s:text}" hittest="false" />
+            </Panel>
+          </Button>
+          <Button id="option_3" class="card">
+            <Label id="card_num_3" class="card-number" text="{s:text}" hittest="false" />
+            <Panel class="card-copy" hittest="false">
+              <Label id="card_text_3" class="card-title" text="{s:text}" hittest="false" />
+              <Label id="card_hint_3" class="card-hint" text="{s:text}" hittest="false" />
+            </Panel>
+          </Button>
+          <Button id="option_4" class="card">
+            <Label id="card_num_4" class="card-number" text="{s:text}" hittest="false" />
+            <Panel class="card-copy" hittest="false">
+              <Label id="card_text_4" class="card-title" text="{s:text}" hittest="false" />
+              <Label id="card_hint_4" class="card-hint" text="{s:text}" hittest="false" />
+            </Panel>
+          </Button>
+          <Button id="option_5" class="card">
+            <Label id="card_num_5" class="card-number" text="{s:text}" hittest="false" />
+            <Panel class="card-copy" hittest="false">
+              <Label id="card_text_5" class="card-title" text="{s:text}" hittest="false" />
+              <Label id="card_hint_5" class="card-hint" text="{s:text}" hittest="false" />
+            </Panel>
+          </Button>
+          <Button id="option_6" class="card">
+            <Label id="card_num_6" class="card-number" text="{s:text}" hittest="false" />
+            <Panel class="card-copy" hittest="false">
+              <Label id="card_text_6" class="card-title" text="{s:text}" hittest="false" />
+              <Label id="card_hint_6" class="card-hint" text="{s:text}" hittest="false" />
+            </Panel>
+          </Button>
+          <Button id="option_7" class="card">
+            <Label id="card_num_7" class="card-number" text="{s:text}" hittest="false" />
+            <Panel class="card-copy" hittest="false">
+              <Label id="card_text_7" class="card-title" text="{s:text}" hittest="false" />
+              <Label id="card_hint_7" class="card-hint" text="{s:text}" hittest="false" />
+            </Panel>
+          </Button>
+          <Button id="option_8" class="card">
+            <Label id="card_num_8" class="card-number" text="{s:text}" hittest="false" />
+            <Panel class="card-copy" hittest="false">
+              <Label id="card_text_8" class="card-title" text="{s:text}" hittest="false" />
+              <Label id="card_hint_8" class="card-hint" text="{s:text}" hittest="false" />
+            </Panel>
+          </Button>
+          <Button id="option_9" class="card">
+            <Label id="card_num_9" class="card-number" text="{s:text}" hittest="false" />
+            <Panel class="card-copy" hittest="false">
+              <Label id="card_text_9" class="card-title" text="{s:text}" hittest="false" />
+              <Label id="card_hint_9" class="card-hint" text="{s:text}" hittest="false" />
+            </Panel>
+          </Button>
+      </Panel>
+      <Panel class="footer" hittest="true">
+        <Panel class="footer-copy" hittest="false">
+          <Label id="page" class="page" text="{s:text}" />
+          <Label id="hint" class="hint" text="{s:text}" />
+        </Panel>
+        <Panel class="navigation" hittest="true">
+          <Button id="previous" class="nav"><Label text="上一页" hittest="false" /></Button>
+          <Button id="next" class="nav"><Label text="下一页" hittest="false" /></Button>
+          <Button id="close" class="nav close"><Label text="关闭  ×" hittest="false" /></Button>
+        </Panel>
+      </Panel>
+    </Panel>
+  </Panel>
+</root>

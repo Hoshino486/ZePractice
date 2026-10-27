@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../src/PublicGameplayService.Menus.cs" Link="PublicGameplayService.Menus.cs" />
+    <Compile Include="../../src/PracticeBotService.Menus.cs" Link="PracticeBotService.Menus.cs" />
+    <Compile Include="../../src/PracticeBotLogic.cs" Link="PracticeBotLogic.cs" />
+    <Compile Include="../../src/PersistentChatMenu.cs" Link="PersistentChatMenu.cs" />
+    <Compile Include="../../src/RadioPanelService.cs" Link="RadioPanelService.cs" />
+    <Compile Include="../../src/RadioPanelLogic.cs" Link="RadioPanelLogic.cs" />
+    <Compile Include="../../src/ZePanelService.cs" Link="ZePanelService.cs" />
+    <Compile Include="../../src/PublicMenuInput.cs" Link="PublicMenuInput.cs" />
+    <Compile Include="../../src/PublicGameplayLogic.cs" Link="PublicGameplayLogic.cs" />
+  </ItemGroup>
+</Project>

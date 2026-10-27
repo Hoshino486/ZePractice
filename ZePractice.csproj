@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>ZePractice</AssemblyName>
+    <Version>1.7.12</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <CssApiDir Condition="'$(CssApiDir)'==''">E:\mapper\chana\steamapps\common\Counter-Strike Global Offensive\game\csgo\addons\counterstrikesharp\api</CssApiDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="src\**\*.cs" />
+    <Reference Include="CounterStrikeSharp.API"><HintPath>$(CssApiDir)\CounterStrikeSharp.API.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions"><HintPath>$(CssApiDir)\Microsoft.Extensions.Logging.Abstractions.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

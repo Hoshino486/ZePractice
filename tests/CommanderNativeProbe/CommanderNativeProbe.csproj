@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><AssemblyName>CommanderNativeProbe</AssemblyName><EnableDynamicLoading>true</EnableDynamicLoading><AllowUnsafeBlocks>true</AllowUnsafeBlocks><CssApiDir>E:\mapper\chana\steamapps\common\Counter-Strike Global Offensive\game\csgo\addons\counterstrikesharp\api</CssApiDir></PropertyGroup>
+  <ItemGroup><Reference Include="CounterStrikeSharp.API"><HintPath>$(CssApiDir)\CounterStrikeSharp.API.dll</HintPath><Private>false</Private></Reference></ItemGroup>
+</Project>

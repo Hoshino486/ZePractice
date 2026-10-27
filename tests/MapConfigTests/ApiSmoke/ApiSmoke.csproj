@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><CssApiDir>E:\mapper\chana\临时文件夹\ze-practice-build-20261011\css-distribution\addons\counterstrikesharp\api</CssApiDir></PropertyGroup>
+<ItemGroup>
+<Compile Include="../../../src/FysConfigReader.cs" Link="FysConfigReader.cs"/><Compile Include="../../../src/MapConfigService.cs" Link="MapConfigService.cs"/><Compile Include="../../../src/ZePracticeConfig.cs" Link="ZePracticeConfig.cs"/>
+<Reference Include="CounterStrikeSharp.API"><HintPath>$(CssApiDir)\CounterStrikeSharp.API.dll</HintPath></Reference>
+<Reference Include="Microsoft.Extensions.Logging.Abstractions"><HintPath>$(CssApiDir)\Microsoft.Extensions.Logging.Abstractions.dll</HintPath></Reference>
+</ItemGroup><ItemGroup><Compile Include="../../../src/ArtifactResetLogic.cs" Link="ArtifactResetLogic.cs" /></ItemGroup></Project>

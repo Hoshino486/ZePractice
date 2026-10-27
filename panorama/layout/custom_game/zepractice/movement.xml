@@ -1,0 +1,9 @@
+<root>
+  <styles><include src="s2r://panorama/styles/custom_game/zepractice/movement.vcss_c" /></styles>
+  <Panel class="ze-movement-screen" hittest="false">
+    <Panel id="movement_window" class="ze-movement-window hidden" hittest="false">
+      <Label id="movement_speed" class="ze-movement-speed" text="{s:text}" />
+      <Label id="movement_jump" class="ze-movement-jump" text="{s:text}" />
+    </Panel>
+  </Panel>
+</root>

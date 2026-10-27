@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><AssemblyName>MapMarkerNativeProbe</AssemblyName><EnableDynamicLoading>true</EnableDynamicLoading></PropertyGroup>
+  <ItemGroup><Reference Include="CounterStrikeSharp.API"><HintPath>$(CssApiDir)\CounterStrikeSharp.API.dll</HintPath><Private>false</Private></Reference><Compile Include="../../src/MapGlowReplication.cs" Link="MapGlowReplication.cs" /></ItemGroup>
+</Project>

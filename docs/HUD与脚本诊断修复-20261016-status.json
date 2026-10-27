@@ -1,0 +1,73 @@
+{
+  "completedAt": "2026-10-16T20:00:28.8765197+08:00",
+  "pluginVersion": "1.7.2",
+  "productionPid": 8108,
+  "productionRestarted": false,
+  "productionMapChanged": false,
+  "mapFilesHashUnchanged": true,
+  "humansAfterTest": 0,
+  "scriptSample": {
+    "Available": true,
+    "Status": "current",
+    "Entities": 19,
+    "Window": {
+      "Seconds": 0.5007812999974703,
+      "Callbacks": 594,
+      "ThinkCallbacks": 576,
+      "Errors": 0,
+      "OtherResults": 0,
+      "ActiveContexts": 18,
+      "CallbackWallMs": 46.70959979557665,
+      "TotalCallbacks": 1951314,
+      "TotalErrors": 0,
+      "LastCallbackAgoSeconds": 0.0021294999969541095,
+      "CallbacksPerSecond": 1186.1465274422198,
+      "ThinkPerSecond": 1150.2026932773042
+    },
+    "Error": null
+  },
+  "nativeScriptRegressionPassed": 11,
+  "nativeDiagnosticsRegressionPassed": 29,
+  "workshop": {
+    "installedUpdated": 1792151576,
+    "id": "3818340815",
+    "status": "current",
+    "clientServerCandidateHashesMatch": true,
+    "remoteUpdated": 1792151576,
+    "hash": "DDB02BAC91EC06B55CD27C9B6478B0AC0A07CB51221BFF38CFEE90C576757897",
+    "manualCacheOverwrite": false
+  },
+  "clientVisual": {
+    "validationErrors": [],
+    "screenshots": [
+      "workshop-on.png",
+      "workshop-off.png",
+      "workshop-menu-page2.png"
+    ],
+    "movementHudVisible": true,
+    "verified": true,
+    "offOnVerified": true,
+    "scriptCountersVisible": true,
+    "newThreeRowLayout": true,
+    "publicCommandInMenu": true,
+    "localAddonArgument": false
+  },
+  "maintenanceFilesHashVerified": 33,
+  "tests": {
+    "publicMenu": 27,
+    "movement": 31,
+    "permissions": 86,
+    "workshopUpdates": 46,
+    "panel": 81,
+    "radio": 28,
+    "customHudContract": 23,
+    "scriptLogic": 32,
+    "practiceBots": 37,
+    "commandText": 94,
+    "serverDiagnosticsWithVpk": 65
+  },
+  "testClientsExited": true,
+  "isolatedServerStopped": true,
+  "videoSettingsRestored": true,
+  "observedScope": "Actual server JS callbacks and caught callback exceptions. Not startup import/compile errors, nor proof every map business rule is correct."
+}

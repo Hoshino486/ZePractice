@@ -1,0 +1,19 @@
+<root>
+  <styles><include src="s2r://panorama/styles/custom_game/zepractice/radio.vcss_c" /></styles>
+  <Panel class="ze-radio-screen" hittest="false">
+    <Panel id="radio_window" class="ze-radio-window hidden" hittest="false">
+      <Label id="radio_title" class="ze-radio-title" text="{s:text}" />
+      <Label id="radio_line_0" class="ze-radio-line" text="{s:text}" />
+      <Label id="radio_line_1" class="ze-radio-line" text="{s:text}" />
+      <Label id="radio_line_2" class="ze-radio-line" text="{s:text}" />
+      <Label id="radio_line_3" class="ze-radio-line" text="{s:text}" />
+      <Label id="radio_line_4" class="ze-radio-line" text="{s:text}" />
+      <Label id="radio_line_5" class="ze-radio-line" text="{s:text}" />
+      <Label id="radio_previous" class="ze-radio-navigation" text="{s:text}" />
+      <Label id="radio_next" class="ze-radio-navigation" text="{s:text}" />
+      <Label class="ze-radio-navigation" text="9. 返回主菜单" />
+      <Label class="ze-radio-navigation" text="0. 关闭" />
+      <Label id="radio_page" class="ze-radio-page" text="{s:text}" />
+    </Panel>
+  </Panel>
+</root>

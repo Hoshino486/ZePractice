@@ -1,0 +1,60 @@
+using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Cvars;
+using ZePractice;
+
+int passed = 0;
+void Check(bool condition, string label)
+{ if (!condition) throw new Exception(label); passed++; Console.WriteLine("PASS " + label); }
+const ulong identity = MapIdentityLogic.IndividualBase + 123456;
+Check(MapIdentityLogic.Verified(identity, identity, false) == identity, "matching authenticated personal identity accepted");
+Check(MapIdentityLogic.Verified(identity, null, false) == null, "raw unverified identity rejected");
+Check(MapIdentityLogic.Verified(identity, identity + 1, false) == null, "mismatched authorization rejected");
+Check(MapIdentityLogic.Verified(identity, identity, true) == null, "bot identities rejected");
+foreach (ulong invalid in new[] { 0ul, MapIdentityLogic.IndividualBase, MapIdentityLogic.IndividualBase + uint.MaxValue + 1, ulong.MaxValue })
+    Check(MapIdentityLogic.Verified(invalid, invalid, false) == null, "invalid/non-person SteamID rejected: " + invalid);
+
+ConVar.Values["cs2f_map_steamids_enable"] = new("1");
+ConVar.Values["sv_lan"] = new("0");
+var plugin = new ZePracticePlugin();
+var service = new MapIdentityService(plugin); service.Initialize();
+var player = new CCSPlayerController(1) { SteamID = identity, AuthorizedSteamID = new(identity) };
+Utilities.Players.Add(player);
+plugin.Tick(); Check(player.Inputs.Count == 0, "inactive map never publishes");
+service.OnMapStart(); plugin.Tick();
+Check(player.Inputs.Single() == ("AddAttribute", identity.ToString()), "controller receives only its real numeric identity");
+Check(player.PlayerPawn.Value!.Inputs.Single() == ("AddAttribute", identity.ToString()), "pawn receives same identity attribute");
+Check(EventPlayerConnect.Fired.Single().Values["steam_id"] == identity.ToString() && EventPlayerConnect.Fired.Single().ServerOnly && EventPlayerConnect.Fired.Single().Forced, "map wakeup uses lossless string and forced server-only event");
+plugin.Tick(); Server.CurrentTime = 0.6f; plugin.Tick();
+Check(EventPlayerConnect.Fired.Count == 1, "unchanged identity does not duplicate map wakeups");
+player.PlayerPawn.Value = new(200); Server.CurrentTime = 1.2f; plugin.Tick();
+Check(player.PlayerPawn.Value.Inputs.Count == 1 && EventPlayerConnect.Fired.Count == 2, "respawn republishes on new pawn");
+player.Resetting = true; service.Invalidate(player.Slot); plugin.Tick();
+Check(EventPlayerConnect.Fired.Count == 2, "pending team reset cannot race identity publication");
+player.Resetting = false; service.Invalidate(player.Slot); plugin.Tick();
+Check(EventPlayerConnect.Fired.Count == 3, "completed team reset restores authenticated identity");
+player.AuthorizedSteamID = null; Server.CurrentTime = 2; plugin.Tick();
+Check(EventPlayerConnect.Fired.Count == 3 && service.Diagnostics(null).Contains("\"eligible\":false"), "auth failure never synthesized into success");
+player.AuthorizedSteamID = new(identity); Server.CurrentTime = 3; plugin.Tick();
+Check(EventPlayerConnect.Fired.Count == 4, "delayed successful authentication publishes");
+player.UserId = 77; Server.CurrentTime = 4; plugin.Tick();
+Check(EventPlayerConnect.Fired.Count == 5, "slot reuse requires fresh publication");
+ConVar.Values["cs2f_map_steamids_enable"].StringValue = "0"; Server.CurrentTime = 5; plugin.Tick();
+Check(EventPlayerConnect.Fired.Count == 5, "disabled native identity setting respected");
+ConVar.Values["cs2f_map_steamids_enable"].StringValue = "1"; Server.CurrentTime = 6; plugin.Tick();
+Check(EventPlayerConnect.Fired.Count == 6, "late enable republishes without reconnect");
+var other = new CCSPlayerController(2) { SteamID = identity + 1, AuthorizedSteamID = new(identity + 1) }; Utilities.Players.Add(other);
+Server.CurrentTime = 7; plugin.Tick();
+Check(!service.Diagnostics(player).Contains("\"slot\":2"), "player diagnostics never expose other identities");
+other.PlayerPawn.Value!.FailNextInput = true; service.Invalidate(other.Slot); plugin.Tick();
+Check(service.Diagnostics(null).Contains("test input failure"), "publication error is recorded");
+Server.CurrentTime = 8; plugin.Tick();
+Check(service.Diagnostics(other).Contains("\"forwarded\":true"), "failed publication is retried instead of marked complete");
+int before = EventPlayerConnect.Fired.Count;
+service.OnMapEnd(); service.Invalidate(player.Slot); plugin.Tick();
+Check(EventPlayerConnect.Fired.Count == before, "map end cancels publication");
+service.OnMapStart(); plugin.Tick();
+Check(EventPlayerConnect.Fired.Count == before + 2, "new map restores both identities independently");
+service.Dispose(); service.Dispose();
+Check(plugin.Listeners.Count == 0, "dispose unregisters listeners idempotently");
+Console.WriteLine($"MAP_IDENTITY_TESTS {passed}/{passed} passed");

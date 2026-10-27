@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../src/ServerDiagnosticsLogic.cs" Link="ServerDiagnosticsLogic.cs" />
+    <Compile Include="../../src/ScriptActivityLogic.cs" Link="ScriptActivityLogic.cs" />
+    <Compile Include="../../src/PermissionPolicy.cs" Link="PermissionPolicy.cs" />
+    <Compile Include="../../src/CommanderResources.cs" Link="CommanderResources.cs" />
+  </ItemGroup>
+</Project>

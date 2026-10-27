@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><DefineConstants>$(DefineConstants);ACCESS_MENU_TESTS</DefineConstants></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../PublicMenuTests/Stubs.cs" Link="NativeStubs.cs" />
+    <Compile Include="../../src/ZePracticePlugin.Access.cs" Link="ZePracticePlugin.Access.cs" />
+    <Compile Include="../../src/ZeCommandText.cs" Link="ZeCommandText.cs" />
+    <Compile Include="../../src/GameplayLogic.cs" Link="GameplayLogic.cs" />
+    <Compile Include="../../src/RadioPanelService.cs" Link="RadioPanelService.cs" />
+    <Compile Include="../../src/RadioPanelLogic.cs" Link="RadioPanelLogic.cs" />
+    <Compile Include="../../src/ZePanelService.cs" Link="ZePanelService.cs" />
+    <Compile Include="../../src/PersistentChatMenu.cs" Link="PersistentChatMenu.cs" />
+    <Compile Include="../../src/PublicGameplayService.Menus.cs" Link="PublicGameplayService.Menus.cs" />
+    <Compile Include="../../src/PublicMenuInput.cs" Link="PublicMenuInput.cs" />
+    <Compile Include="../../src/PublicGameplayLogic.cs" Link="PublicGameplayLogic.cs" />
+  </ItemGroup>
+</Project>

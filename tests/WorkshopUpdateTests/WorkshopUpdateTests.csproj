@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../src/WorkshopUpdateLogic.cs" Link="WorkshopUpdateLogic.cs" />
+    <Compile Include="../../src/ZePracticeConfig.cs" Link="ZePracticeConfig.cs" />
+    <Compile Include="../../src/ArtifactResetLogic.cs" Link="ArtifactResetLogic.cs" />
+  </ItemGroup>
+</Project>

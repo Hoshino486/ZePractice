@@ -1,0 +1,12 @@
+.ze-diagnostics-screen { width: 100%; height: 100%; }
+.ze-diagnostics-window { width: 1180px; height: 92px; horizontal-align: left; vertical-align: top; margin-left: 10px; margin-top: 360px; flow-children: down; }
+.hidden { visibility: collapse; }
+.diag-row { width: 100%; height: 29px; flow-children: right; }
+.diag-row Label { height: 28px; color: #EFF7FF; font-family: "Noto Sans CJK SC", "Arial"; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 3px 3.0 #000000F0; white-space: nowrap; }
+.diag-row .diag-title { color: #B7F37D; }
+.diag-row .good { color: #A6F456; }
+.diag-row .warning { color: #F8BF47; }
+.diag-row .critical { color: #FF565B; }
+.diag-row .unknown { color: #A9B4C0; }
+#diag_detail { font-size: 17px; padding-top: 2px; }
+#diag_script { font-size: 18px; padding-top: 1px; }

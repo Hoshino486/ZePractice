@@ -1,0 +1,5 @@
+.ze-movement-screen { width: 100%; height: 100%; }
+.ze-movement-window { width: 440px; height: 48px; horizontal-align: center; vertical-align: bottom; margin-bottom: 86px; flow-children: down; }
+.hidden { visibility: collapse; }
+.ze-movement-speed { width: 100%; height: 25px; text-align: center; color: #EFF7FF; font-family: "Noto Sans CJK SC", "Arial"; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 3px 3.0 #000000F0; text-overflow: shrink; }
+.ze-movement-jump { width: 100%; height: 23px; text-align: center; color: #8FDCDF; font-family: "Noto Sans CJK SC", "Arial"; font-size: 17px; font-weight: bold; text-shadow: 1px 1px 3px 3.0 #000000F0; text-overflow: shrink; }

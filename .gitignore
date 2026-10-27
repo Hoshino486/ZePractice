@@ -1,0 +1,28 @@
+# 构建产物
+bin/
+obj/
+*.user
+*.suo
+
+# 本机配置与运行痕迹
+server-settings.json
+last-run.json
+repositories.json
+logs/
+*.log
+*.mdmp
+*.dmp
+
+# 运行期数据
+data/
+configs/
+runtime/
+
+# 编辑器
+.vs/
+.vscode/
+.idea/
+
+# 系统
+Thumbs.db
+desktop.ini
