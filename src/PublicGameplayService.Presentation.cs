@@ -52,25 +52,8 @@ public sealed partial class PublicGameplayService
 
     private void MaintainNameTag(CCSPlayerController player, PlayerState state)
     {
-        if (!_players.Values.Any(value => value.HideRange > 0)) return;
-        var pawn = player.PlayerPawn.Value!;
-        if (pawn.AbsOrigin == null) return;
-        if (state.NameTag is not { IsValid: true })
-        {
-            var label = Utilities.CreateEntityByName<CPointWorldText>("point_worldtext");
-            if (label == null) return;
-            label.FontSize = 24; label.WorldUnitsPerPx = 0.15f; label.Fullbright = true; label.Enabled = true;
-            label.Color = Color.White; label.FontName = "Arial";
-            label.JustifyHorizontal = PointWorldTextJustifyHorizontal_t.POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_CENTER;
-            label.JustifyVertical = PointWorldTextJustifyVertical_t.POINT_WORLD_TEXT_JUSTIFY_VERTICAL_BOTTOM;
-            label.ReorientMode = PointWorldTextReorientMode_t.POINT_WORLD_TEXT_REORIENT_AROUND_UP;
-            label.MessageText = CleanName(player.PlayerName);
-            label.DispatchSpawn(); state.NameTag = label;
-        }
-        var tag = state.NameTag;
-        string name = CleanName(player.PlayerName);
-        if (tag.MessageText != name) { tag.MessageText = name; Utilities.SetStateChanged(tag, "CPointWorldText", "m_messageText"); }
-        tag.Teleport(new Vector3(pawn.AbsOrigin.X, pawn.AbsOrigin.Y, pawn.AbsOrigin.Z + 85));
+        // HealthTagService already keeps a nameplate (name + HP + armor) above every player,
+        // so the hide feature no longer creates a second, duplicate label entity.
     }
 
     private static string CleanName(string value) => new(value.Where(character => !char.IsControl(character)).Take(48).ToArray());

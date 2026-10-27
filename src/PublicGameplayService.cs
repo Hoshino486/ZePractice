@@ -40,7 +40,7 @@ public sealed partial class PublicGameplayService : IDisposable
         public float NextKnifeIssue;
         public float MusicVolume = 1;
         public int HideRange;
-        public CPointWorldText? NameTag;
+        public CPointWorldText? NameTag = null;
         public readonly ZombieRegenerationState Regeneration = new();
         public readonly BunnyHopSequence Jumps = new();
     }

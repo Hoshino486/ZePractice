@@ -13,7 +13,7 @@ namespace ZePractice;
 public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePracticeConfig>
 {
     public override string ModuleName => "ZE Practice · FYS Config Adapter";
-    public override string ModuleVersion => "1.7.18";
+    public override string ModuleVersion => "1.7.19";
     public override string ModuleAuthor => "Local ZE Server";
     public override string ModuleDescription => "无奖励的 ZE 跑图、管理、Boss、地图翻译与 FYS 配置兼容";
     public ZePracticeConfig Config { get; set; } = new();
@@ -35,6 +35,7 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
     private ServerPlayerModelService? _serverModels;
     private MovementHudService? _movementHud;
     private ServerDiagnosticsService? _serverDiagnostics;
+    private HealthTagService? _healthTags;
     public bool DiagnosticsHudEnabled(CCSPlayerController p) => _serverDiagnostics?.Enabled(p) ?? true;
     private PracticeBotService? _practiceBots;
     public bool IsPracticeBot(CCSPlayerController? p) => _practiceBots?.IsPracticeBot(p) == true;
@@ -114,9 +115,10 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
         _serverModels = new(this); _serverModels.Initialize();
         _movementHud = new(this); _movementHud.Initialize();
         _serverDiagnostics = new(this); _serverDiagnostics.Initialize();
+        _healthTags = new(this); _healthTags.Initialize();
         _workshopUpdates = new(this); _workshopUpdates.Initialize();
         RegisterListener<Listeners.OnMapStart>(StartMap);
-        RegisterListener<Listeners.OnMapEnd>(() => { _mapGeneration++; _practiceBots?.OnMapEnd(); _movementHud?.OnMapEnd(); _serverDiagnostics?.OnMapEnd(); _thirdPerson?.Reset(false); _commander?.OnMapEnd(); _serverModels?.OnMapEnd(); _mapIdentity?.OnMapEnd(); _roundGuard?.OnMapEnd(); _publicGameplay?.OnMapEnd(); _mapVote?.OnMapEnd(); _mapMarkers?.OnMapEnd(); _grenadeImmunity?.OnMapEnd(); });
+        RegisterListener<Listeners.OnMapEnd>(() => { _mapGeneration++; _practiceBots?.OnMapEnd(); _movementHud?.OnMapEnd(); _serverDiagnostics?.OnMapEnd(); _healthTags?.OnMapEnd(); _thirdPerson?.Reset(false); _commander?.OnMapEnd(); _serverModels?.OnMapEnd(); _mapIdentity?.OnMapEnd(); _roundGuard?.OnMapEnd(); _publicGameplay?.OnMapEnd(); _mapVote?.OnMapEnd(); _mapMarkers?.OnMapEnd(); _grenadeImmunity?.OnMapEnd(); });
         RegisterEventHandler<EventRoundStart>((ev, info) =>
         {
             _map.OnRoundStart(); _boss.OnRoundStart(); _admin.OnRoundStart(); _gameplay.OnRoundStart(); _items.OnRoundStart();
@@ -161,7 +163,7 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
         _mapVote?.OnMapStart(); _mapMarkers?.OnMapStart();
         _thirdPerson?.Reset(false);
         _commander?.OnMapStart(); _serverModels?.OnMapStart();
-        _movementHud?.OnMapStart(); _serverDiagnostics?.OnMapStart();
+        _movementHud?.OnMapStart(); _serverDiagnostics?.OnMapStart(); _healthTags?.OnMapStart();
         // Engine/CS2Fixes map configs may execute after OnMapStart. Apply our chosen profile last.
         AddTimer(3f, () => { if (_mapGeneration == generation) { ApplyBaseFeatures(); _map?.ApplyCurrentMap(); _publicGameplay?.ReapplyRules(); if (IsPractice) Server.ExecuteCommand("mp_warmup_end"); ShowStatus(null); } }, TimerFlags.STOP_ON_MAPCHANGE);
     }
@@ -233,6 +235,7 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
         Cleanup("third-person", () => _thirdPerson?.Dispose());
         Cleanup("movement-hud", () => _movementHud?.Dispose());
         Cleanup("server-diagnostics", () => _serverDiagnostics?.Dispose());
+        Cleanup("health-tags", () => _healthTags?.Dispose());
         Cleanup("commander", () => _commander?.Dispose()); Cleanup("server-models", () => _serverModels?.Dispose());
         Cleanup("identity", () => _mapIdentity?.Dispose());
         Cleanup("immunity", () => _grenadeImmunity?.Dispose());
