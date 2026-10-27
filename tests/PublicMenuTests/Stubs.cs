@@ -195,7 +195,7 @@ namespace ZePractice
 #if !ACCESS_MENU_TESTS
     public static class ZeCommandText { public static string Canonical(string s)=>s=="css_zeweapon"?"css_zebuy":s; }
 #endif
-    public sealed class MenuOptions { public int ZombieHealth=35000, HumanHealthLimit=35000, HumanArmorLimit=2500, ZombieArmor=2500, MaximumRoundMinutes=1440; }
+    public sealed class MenuOptions { public int ZombieHealth=35000, ZombieHealthLimit=1000000, HumanHealthLimit=35000, HumanArmorLimit=2500, ZombieArmor=2500, MaximumRoundMinutes=1440; }
     public sealed partial class PublicGameplayService(ZePracticePlugin plugin)
     {
         private readonly ZePracticePlugin _plugin=plugin;

@@ -366,7 +366,7 @@ public sealed partial class PublicGameplayService : IDisposable
         return JsonSerializer.Serialize(new
         {
             active = _active,
-            options = new { Options.ZombieHealth, Options.ZombieArmor, Options.RegenerationDelaySeconds, Options.HumanHealthLimit,
+            options = new { Options.ZombieHealth, Options.ZombieHealthLimit, Options.ZombieArmor, Options.RegenerationDelaySeconds, Options.HumanHealthLimit,
                 Options.HumanArmorLimit, Options.Money, Options.ReserveAmmo, Options.DefaultInfiniteMagazine, Options.DefaultBunnyHop,
                 Options.AllowZombieMapKnives },
             artifactResetMaps = Options.ArtifactResetRules.Keys, trackedGuns = _guns.Count, removedGuns = _removedGuns, mapSounds = _sounds.Count,

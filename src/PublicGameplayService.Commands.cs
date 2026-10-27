@@ -42,7 +42,7 @@ public sealed partial class PublicGameplayService
     private void HealthCommand(CCSPlayerController? player, CommandInfo command)
     {
         if (!NeedAlive(player)) return;
-        int limit = player!.TeamNum == 2 ? Options.ZombieHealth : Options.HumanHealthLimit;
+        int limit = player!.TeamNum == 2 ? Options.ZombieHealthLimit : Options.HumanHealthLimit;
         if (command.ArgCount != 2 || !PublicGameplayLogic.TryInteger(command.GetArg(1), 1, limit, out int health))
         { _plugin.Reply(player, $"用法：!ze_hp <1..{limit}>，超上限、负数和非整数均不执行。"); return; }
         var state = State(player); var pawn = player.PlayerPawn.Value!;

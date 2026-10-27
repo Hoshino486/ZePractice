@@ -134,10 +134,10 @@ public sealed partial class PublicGameplayService
         switch (command)
         {
             case "css_ze_bot_hp": min = 1; max = _plugin.Config.PracticeBots.MaximumHealth; title = "下次放置的 Bot 生命/上限"; presets = ["100", "1000", "10000", "35000", max.ToString(CultureInfo.InvariantCulture)]; break;
-            case "css_ze_hp": min = 1; max = p.TeamNum == 2 ? Options.ZombieHealth : Options.HumanHealthLimit; title = "生命和个人上限"; presets = ["100", "1000", "10000", max.ToString(CultureInfo.InvariantCulture)]; break;
+            case "css_ze_hp": min = 1; max = p.TeamNum == 2 ? Options.ZombieHealthLimit : Options.HumanHealthLimit; title = "生命和个人上限"; presets = ["100", "1000", "10000", "35000", "100000", "1000000", max.ToString(CultureInfo.InvariantCulture)]; break;
             case "css_ze_armor":
                 if (p.TeamNum == 2) { _plugin.Reply(p, $"僵尸护甲由服务器管理，上限 {Options.ZombieArmor}。"); return; }
-                max = Options.HumanArmorLimit; title = "当前护甲"; presets = ["0", "100", "1000", max.ToString(CultureInfo.InvariantCulture)]; break;
+                max = Options.HumanArmorLimit; title = "当前护甲"; presets = ["0", "100", "1000", "2500", "100000", "1000000", max.ToString(CultureInfo.InvariantCulture)]; break;
             case "css_ze_music": max = 1; fraction = true; title = "地图音乐音量（不改语音/枪声）"; presets = ["0", "0.25", "0.5", "0.75", "1"]; break;
             case "css_ze_hide": max = 999; title = "范围内屏蔽队友，0关闭"; presets = ["0", "100", "300", "600", "999"]; break;
             case "css_ze_roundtime": min = 1; max = Options.MaximumRoundMinutes; title = "回合时间（分钟）"; presets = ["10", "30", "60", "120"]; break;

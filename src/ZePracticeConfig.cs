@@ -112,6 +112,8 @@ public sealed class MapMarkerOptions
 public sealed class PublicGameplayOptions
 {
     public int ZombieHealth { get; set; } = 35000;
+    // Ceiling for the public !ze_hp command; keeps the zombie spawn health independent of it.
+    public int ZombieHealthLimit { get; set; } = 1000000;
     public int ZombieArmor { get; set; } = 2500;
     public float RegenerationDelaySeconds { get; set; } = 5;
     public int HealthRegenerationPerSecond { get; set; } = 1750;
@@ -143,7 +145,7 @@ public sealed class PublicGameplayOptions
         if (ZombieKnifeItems == null || ZombieKnifeItems.Any(pair => string.IsNullOrWhiteSpace(pair.Key) ||
             pair.Value == null || pair.Value.Any(string.IsNullOrWhiteSpace)))
             throw new InvalidDataException("PublicGameplay.ZombieKnifeItems requires map keys and exact entity names.");
-        if (ZombieHealth is < 1 or > 1000000 || ZombieArmor is < 0 or > 1000000 ||
+        if (ZombieHealth is < 1 or > 1000000 || ZombieHealthLimit is < 1 or > 1000000 || ZombieArmor is < 0 or > 1000000 ||
             HumanHealthLimit is < 1 or > 1000000 || HumanArmorLimit is < 0 or > 1000000 ||
             Money is < 0 or > 1000000 || ReserveAmmo is < 1 or > 999 ||
             !float.IsFinite(RegenerationDelaySeconds) || RegenerationDelaySeconds is < 0 or > 300 ||
