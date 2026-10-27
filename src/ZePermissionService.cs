@@ -85,7 +85,7 @@ public sealed class ZePermissionService : IDisposable
     public bool Allows(CCSPlayerController? player, string command)
     {
         if (_disposed || PermissionPolicy.NormalizeCommand(command).Length == 0) return false;
-        if (PermissionPolicy.NormalizeCommand(command) is "css_ze_map" or "css_ze_workshop_now" or "css_ze_installed_maps" or "css_ze_map_remove")
+        if (PermissionPolicy.NormalizeCommand(command) is "css_ze_map" or "css_ze_workshop_now" or "css_ze_installed_maps" or "css_ze_map_remove" or "css_ze_timescale")
             return IsServerOwner(player);
         var policy = Volatile.Read(ref _policy);
         var subject = Identity(player, policy);

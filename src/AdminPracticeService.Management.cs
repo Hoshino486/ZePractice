@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.ValveConstants.Protobuf;
@@ -59,6 +60,35 @@ public sealed partial class AdminPracticeService
         if (!NeedAdmin(p, "css_ze_reload")) return;
         _plugin.ReloadMapConfiguration(); RefreshMaps(); Audit(p, "reload-map-config");
         _plugin.Reply(p, "已重载当前地图配置与本地地图列表；修改主配置 JSON 后需重新加载插件。");
+    }
+    private const float FastMapTimescale = 2f;
+    private bool _timescaleEnabledCheats;
+    private static bool FastTimeActive() => (ConVar.Find("host_timescale")?.GetPrimitiveValue<float>() ?? 1f) > 1.05f;
+    private void ToggleTimescale(CCSPlayerController? p)
+    {
+        if (!_plugin.NeedPermission(p, "css_ze_timescale")) return;
+        // host_timescale is cheat protected: it only takes effect while sv_cheats is 1.
+        // Remember whether this command had to enable cheats so "off" can restore the server.
+        if (!FastTimeActive())
+        {
+            if (ConVar.Find("sv_cheats")?.GetPrimitiveValue<bool>() != true)
+            {
+                Server.ExecuteCommand("sv_cheats 1");
+                _timescaleEnabledCheats = true;
+            }
+            Server.ExecuteCommand("host_timescale " + FastMapTimescale.ToString("0.##", CultureInfo.InvariantCulture));
+            Audit(p, "timescale:" + FastMapTimescale.ToString("0.##", CultureInfo.InvariantCulture));
+            _plugin.Reply(p, $"地图时间加速 {FastMapTimescale:0.##}x（所有人：移动、物理、脚本同步加速）；再次执行恢复正常速度。");
+            return;
+        }
+        Server.ExecuteCommand("host_timescale 1");
+        if (_timescaleEnabledCheats)
+        {
+            Server.ExecuteCommand("sv_cheats 0");
+            _timescaleEnabledCheats = false;
+        }
+        Audit(p, "timescale:1");
+        _plugin.Reply(p, "地图时间已恢复正常速度（所有人）。");
     }
     private void PunishCommand(CCSPlayerController? p, CommandInfo c, string kind)
     {

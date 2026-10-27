@@ -85,6 +85,9 @@ public sealed partial class AdminPracticeService
         Option(menu, p, "css_ze_mode", "切换为多人 ZE", who => Confirm(who, "css_ze_mode", "切换多人 ZE（不重启回合）？", a => SetMode(a, false)));
         Option(menu, p, "css_ze_restart", "重新开始回合", who => Confirm(who, "css_ze_restart", "重启当前回合？", RestartRound));
         Option(menu, p, "css_ze_reload", "重载地图配置", Reload);
+        // Owner-only toggle: host_timescale accelerates everyone's time flow (movement included).
+        if (_plugin.Permissions.Allows(p, "css_ze_timescale"))
+            Option(menu, p, "css_ze_timescale", $"服主：加速地图时间（所有人）[{(FastTimeActive() ? "开" : "关")}]", who => ToggleTimescale(who));
         Option(menu, p, "css_itemwatch", "神器绑定诊断", who => RunOwnCommand(who, "css_itemwatch"));
         Option(menu, p, "css_ze_punishments", "查看有效封禁 / 禁言", ListPunishments);
         Option(menu, p, "css_ze_adminhelp", "管理员设置帮助", AdminHelp);
@@ -129,6 +132,7 @@ public sealed partial class AdminPracticeService
         }
         Add("css_ze_respawn_other", "复活", (a, b) => Respawn(a, b, true));
         Add("css_ze_bring", "拉到我身边", Bring);
+        Add("css_ze_goto", "传送到他那里", GotoMenuTarget);
         Add("css_ze_team", "切到 CT", (a, b) => SetTeam(a, b, CsTeam.CounterTerrorist));
         Add("css_ze_team", "切到 T", (a, b) => SetTeam(a, b, CsTeam.Terrorist));
         Add("css_ze_team", "切到观察者", (a, b) => SetTeam(a, b, CsTeam.Spectator));

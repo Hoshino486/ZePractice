@@ -214,6 +214,12 @@ public sealed partial class AdminPracticeService
         if (p == null) { _plugin.Reply(p, "拉人需要管理员本人在游戏中。"); return; }
         if (TeleportToPlayer(t, p)) Audit(p, "bring", t);
     }
+    private void GotoMenuTarget(CCSPlayerController? p, CCSPlayerController t)
+    {
+        if (!NeedAdmin(p, "css_ze_goto") || !CanTarget(p, t)) return;
+        if (p == null) { _plugin.Reply(p, "传送需要管理员本人在游戏中。"); return; }
+        if (TeleportToPlayer(p, t)) Audit(p, "goto-menu", t);
+    }
     private bool TeleportToPlayer(CCSPlayerController moved, CCSPlayerController destination)
     {
         var pawn = AlivePawn(moved); var other = AlivePawn(destination); var origin = other?.AbsOrigin;
