@@ -8,30 +8,25 @@ using Microsoft.Extensions.Logging;
 namespace ZePractice;
 
 /// <summary>
-/// Per-viewer enemy plate, standing up like the commander marker digits: three worldtext
-/// strips (name, HP current/max, armor) rotated 90 degrees and yawed toward that viewer,
-/// so each string reads bottom-to-top and always faces the viewer. Teammates keep the
+/// Per-viewer enemy plate, standing up like the commander marker digits: one worldtext per
+/// (viewer, enemy) pair with "name HP current/max armor", rotated 90 degrees and yawed toward
+/// that viewer, so it reads bottom-to-top and always faces the viewer. Teammates keep the
 /// native team-ID tag.
 /// </summary>
 public sealed class ViewerPlateService(ZePracticePlugin plugin) : IDisposable
 {
     private sealed class Plate
     {
-        public CPointWorldText? Name;
-        public CPointWorldText? Health;
-        public CPointWorldText? Armor;
+        public CPointWorldText? Entity;
         public int Viewer;
         public int Target;
         public int Team;
-        public string NameText = "";
-        public string HealthText = "";
-        public string ArmorText = "";
+        public string Text = "";
     }
 
     private static readonly Color ZombieColor = Color.FromArgb(255, 255, 96, 96);
     private static readonly Color HumanColor = Color.FromArgb(255, 120, 200, 255);
     private const float Height = 104f;
-    private const float ColumnSpacing = 16f;
     private const float FontSize = 34f;
     private const float WorldUnitsPerPx = 0.2f;
     private const double UpdateSeconds = 0.2;
@@ -93,12 +88,9 @@ public sealed class ViewerPlateService(ZePracticePlugin plugin) : IDisposable
             if (viewer is not { IsValid: true }) continue;
             foreach (var plate in _plates.Values)
             {
-                foreach (var label in new[] { plate.Name, plate.Health, plate.Armor })
-                {
-                    if (label is not { IsValid: true }) continue;
-                    if (plate.Viewer == viewer.Slot) info.TransmitEntities.Add(label);
-                    else info.TransmitEntities.Remove((int)label.Index);
-                }
+                if (plate.Entity is not { IsValid: true }) continue;
+                if (plate.Viewer == viewer.Slot) info.TransmitEntities.Add(plate.Entity);
+                else info.TransmitEntities.Remove((int)plate.Entity.Index);
             }
         }
     }
@@ -109,38 +101,37 @@ public sealed class ViewerPlateService(ZePracticePlugin plugin) : IDisposable
         if (!_plates.TryGetValue(key, out var plate)) _plates[key] = plate = new Plate { Viewer = viewer.Slot, Target = target.Slot };
         int team = target.TeamNum;
         var color = team == 2 ? ZombieColor : HumanColor;
-        string name = NameOf(target);
-        string health = $"HP {pawn.Health}/{Math.Max(pawn.Health, pawn.MaxHealth)}";
-        string armor = $"甲 {pawn.ArmorValue}";
-        if (plate.Name is not { IsValid: true }) { plate.Name = Create(name, color); plate.NameText = name; }
-        if (plate.Health is not { IsValid: true }) { plate.Health = Create(health, color); plate.HealthText = health; }
-        if (plate.Armor is not { IsValid: true }) { plate.Armor = Create(armor, color); plate.ArmorText = armor; }
-        if (plate.Name is not { IsValid: true } || plate.Health is not { IsValid: true } || plate.Armor is not { IsValid: true }) return;
-        if (plate.Team != team)
+        string text = Label(target, pawn);
+        if (plate.Entity is not { IsValid: true })
         {
+            plate.Entity = Create(text, color);
+            if (plate.Entity == null) return;
             plate.Team = team;
-            foreach (var label in new[] { plate.Name, plate.Health, plate.Armor })
+            plate.Text = text;
+        }
+        else
+        {
+            if (plate.Text != text)
             {
-                label.Color = color;
-                Utilities.SetStateChanged(label, "CPointWorldText", "m_Color");
+                plate.Text = text;
+                plate.Entity.MessageText = text;
+                Utilities.SetStateChanged(plate.Entity, "CPointWorldText", "m_messageText");
+            }
+            if (plate.Team != team)
+            {
+                plate.Team = team;
+                plate.Entity.Color = color;
+                Utilities.SetStateChanged(plate.Entity, "CPointWorldText", "m_Color");
             }
         }
-        Update(plate.Name, ref plate.NameText, name);
-        Update(plate.Health, ref plate.HealthText, health);
-        Update(plate.Armor, ref plate.ArmorText, armor);
         var origin = pawn.AbsOrigin!;
         var eyePosition = eye.AbsOrigin ?? origin;
-        var basePosition = new Vector3(origin.X, origin.Y, origin.Z + Height);
-        float yaw = MathF.Atan2(eyePosition.Y - basePosition.Y, eyePosition.X - basePosition.X) * 180 / MathF.PI;
-        float radians = yaw * MathF.PI / 180;
-        var right = new Vector3(-MathF.Sin(radians), MathF.Cos(radians), 0);
-        var angles = new Vector3(0, yaw + 90, 90);
-        plate.Name.Teleport(basePosition + right * -ColumnSpacing, angles);
-        plate.Health.Teleport(basePosition, angles);
-        plate.Armor.Teleport(basePosition + right * ColumnSpacing, angles);
+        var position = new Vector3(origin.X, origin.Y, origin.Z + Height);
+        float yaw = MathF.Atan2(eyePosition.Y - position.Y, eyePosition.X - position.X) * 180 / MathF.PI;
+        plate.Entity.Teleport(position, new Vector3(0, yaw + 90, 90));
     }
 
-    private string NameOf(CCSPlayerController target)
+    private string Label(CCSPlayerController target, CCSPlayerPawn pawn)
     {
         string name = Clean(target.PlayerName);
         if (plugin.IsPracticeBot(target))
@@ -149,15 +140,8 @@ public sealed class ViewerPlateService(ZePracticePlugin plugin) : IDisposable
             name = index >= 0 && int.TryParse(name[(index + 1)..], out int id) ? $"Bot #{id}" : "Bot";
         }
         else if (target.IsBot) name = "[电脑玩家]" + name;
-        return name;
-    }
-
-    private static void Update(CPointWorldText label, ref string cached, string text)
-    {
-        if (cached == text) return;
-        cached = text;
-        label.MessageText = text;
-        Utilities.SetStateChanged(label, "CPointWorldText", "m_messageText");
+        int maxHealth = Math.Max(pawn.Health, pawn.MaxHealth);
+        return $"{name} HP {pawn.Health}/{maxHealth} 甲 {pawn.ArmorValue}";
     }
 
     private static CPointWorldText? Create(string text, Color color)
@@ -181,15 +165,12 @@ public sealed class ViewerPlateService(ZePracticePlugin plugin) : IDisposable
     private void Remove((int, int) key)
     {
         if (!_plates.Remove(key, out var plate)) return;
-        foreach (var label in new[] { plate.Name, plate.Health, plate.Armor })
-            if (label is { IsValid: true }) label.Remove();
+        if (plate.Entity is { IsValid: true }) plate.Entity.Remove();
     }
 
     private void RemoveAll()
     {
-        foreach (var plate in _plates.Values)
-            foreach (var label in new[] { plate.Name, plate.Health, plate.Armor })
-                if (label is { IsValid: true }) label.Remove();
+        foreach (var plate in _plates.Values) if (plate.Entity is { IsValid: true }) plate.Entity.Remove();
         _plates.Clear();
     }
 
