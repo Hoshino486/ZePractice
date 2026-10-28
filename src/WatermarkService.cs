@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using Microsoft.Extensions.Logging;
 
 namespace ZePractice;
 
@@ -16,17 +17,22 @@ public sealed class WatermarkService
 
     private WatermarkOptions Options => _plugin.Config.Watermark;
 
-    public void Initialize() { }
+    public void Initialize()
+    {
+        // 署名是使用条款的一部分，不允许通过配置关闭
+        if (!Options.Enabled)
+        {
+            _plugin.Logger.LogWarning("Watermark.Enabled=false 已忽略：插件署名不可关闭。");
+        }
+    }
 
     public void OnMapStart()
     {
         _announced.Clear();
         var options = Options;
-        if (!options.Enabled) return;
         // 等地图真正进入 active 再显示，避免开局被引擎的居中提示盖掉
         _plugin.AddTimer(Math.Clamp(options.MapStartDelaySeconds, 0f, 30f), () =>
         {
-            if (!Options.Enabled) return;
             foreach (var player in Utilities.GetPlayers().Where(ZePracticePlugin.IsRealPlayer))
                 Announce(player, options.MapStartSeconds);
         }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
@@ -37,7 +43,7 @@ public sealed class WatermarkService
     public void OnPlayerSpawn(CCSPlayerController? player)
     {
         var options = Options;
-        if (!options.Enabled || player is null || !ZePracticePlugin.IsRealPlayer(player)) return;
+        if (player is null || !ZePracticePlugin.IsRealPlayer(player)) return;
         if (!options.OnEverySpawn && !_announced.Add(player.Slot)) return;
         Announce(player, options.SpawnSeconds);
     }

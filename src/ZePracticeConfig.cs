@@ -160,6 +160,7 @@ public sealed class PublicGameplayOptions
 /// <summary>服务器署名：加载插件后在进图和出生时提示制作人。</summary>
 public sealed class WatermarkOptions
 {
+    /// <summary>保留字段：署名不可关闭，写成 false 会被忽略并在日志里提示。</summary>
     public bool Enabled { get; set; } = true;
     public string Headline { get; set; } = "跑图插件制作";
     public string Author { get; set; } = "赛博刹那";
