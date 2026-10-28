@@ -14,11 +14,7 @@ public sealed class TeammateTagService(ZePracticePlugin plugin) : IDisposable
     private static readonly string[] ClientCommands =
     [
         "cl_teamid_overhead_always 1",
-        "cl_teamid_overhead_maxdist 0",
-        "con_enable 1",
-        // The `~` key does not reach the game on some keyboard layouts/IME setups; F2 is
-        // layout independent and currently unused by our bind set.
-        "bind \"F2\" \"toggleconsole\""
+        "cl_teamid_overhead_maxdist 0"
     ];
 
     public void Initialize()
