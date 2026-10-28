@@ -85,12 +85,36 @@ public sealed partial class AdminPracticeService
         Option(menu, p, "css_ze_mode", "切换为多人 ZE", who => Confirm(who, "css_ze_mode", "切换多人 ZE（不重启回合）？", a => SetMode(a, false)));
         Option(menu, p, "css_ze_restart", "重新开始回合", who => Confirm(who, "css_ze_restart", "重启当前回合？", RestartRound));
         Option(menu, p, "css_ze_reload", "重载地图配置", Reload);
-        // Owner-only toggle: host_timescale accelerates everyone's time flow (movement included).
+        // Owner-only: host_timescale accelerates everyone's time flow (movement included).
         if (_plugin.Permissions.Allows(p, "css_ze_timescale"))
-            Option(menu, p, "css_ze_timescale", $"服主：加速地图时间（所有人）[{(FastTimeActive() ? "开" : "关")}]", who => ToggleTimescale(who));
+        {
+            string state = FastTimeActive() ? "开 " + CurrentTimescale().ToString("0.##", CultureInfo.InvariantCulture) + "x" : "关";
+            Option(menu, p, "css_ze_timescale", $"服主：加速地图时间（所有人）[{state}]", who => ToggleTimescale(who));
+            Option(menu, p, "css_ze_timescale", $"服主：设置加速倍数（当前 {_mapTimescale:0.##}x）", ShowTimescaleMenu);
+        }
         Option(menu, p, "css_itemwatch", "神器绑定诊断", who => RunOwnCommand(who, "css_itemwatch"));
         Option(menu, p, "css_ze_punishments", "查看有效封禁 / 禁言", ListPunishments);
         Option(menu, p, "css_ze_adminhelp", "管理员设置帮助", AdminHelp);
+        _plugin.OpenMenu(p, menu);
+    }
+    private void ShowTimescaleMenu(CCSPlayerController? p)
+    {
+        if (!_plugin.NeedPermission(p, "css_ze_timescale")) return;
+        if (p == null)
+        {
+            _plugin.Reply(null, $"当前加速倍数 {_mapTimescale:0.##}x；用法：css_ze_timescale（开/关）或 css_ze_timescale <1.1～20>。");
+            return;
+        }
+        var menu = new ChatMenu($"地图时间加速（当前 {_mapTimescale:0.##}x）") { ExitButton = true };
+        Option(menu, p, "css_ze_timescale", $"{(FastTimeActive() ? "关闭加速" : "开启加速")}（{_mapTimescale:0.##}x）", who => ToggleTimescale(who));
+        foreach (float preset in new[] { 1.5f, 2f, 3f, 4f, 5f, 10f })
+        {
+            float value = preset;
+            Option(menu, p, "css_ze_timescale", $"设为 {value:0.##}x 并立即生效", who => SetTimescale(who, value, true));
+        }
+        Option(menu, p, "css_ze_timescale", "自定义倍数：聊天输入 !ze_timescale <1.1～20>",
+            who => _plugin.Reply(who, "用法：!ze_timescale 2.5（范围 1.1～20）；不带参数为开/关。"));
+        Option(menu, p, "css_zeadmin", "返回服务器管理", ShowAdmin);
         _plugin.OpenMenu(p, menu);
     }
     private void ShowPlayers(CCSPlayerController p)

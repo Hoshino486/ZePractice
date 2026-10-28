@@ -61,26 +61,50 @@ public sealed partial class AdminPracticeService
         _plugin.ReloadMapConfiguration(); RefreshMaps(); Audit(p, "reload-map-config");
         _plugin.Reply(p, "已重载当前地图配置与本地地图列表；修改主配置 JSON 后需重新加载插件。");
     }
-    private const float FastMapTimescale = 2f;
+    private const float MinMapTimescale = 1.1f, MaxMapTimescale = 20f;
+    private float _mapTimescale = 2f;
     private bool _timescaleEnabledCheats;
-    private static bool FastTimeActive() => (ConVar.Find("host_timescale")?.GetPrimitiveValue<float>() ?? 1f) > 1.05f;
+    private static float CurrentTimescale() => ConVar.Find("host_timescale")?.GetPrimitiveValue<float>() ?? 1f;
+    private static bool FastTimeActive() => CurrentTimescale() > 1.05f;
+    private void TimescaleCommand(CCSPlayerController? p, CommandInfo c)
+    {
+        if (c.ArgCount < 2) { ToggleTimescale(p); return; }
+        string raw = c.GetArg(1).Trim().TrimEnd('x', 'X');
+        if (raw.Equals("off", StringComparison.OrdinalIgnoreCase) || raw == "0" || raw == "1") { StopTimescale(p); return; }
+        if (!float.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out float value))
+        { _plugin.Reply(p, "用法：!ze_timescale（开/关），或 !ze_timescale <倍数 1.1～20>，例如 2.5。"); return; }
+        SetTimescale(p, value, true);
+    }
     private void ToggleTimescale(CCSPlayerController? p)
     {
         if (!_plugin.NeedPermission(p, "css_ze_timescale")) return;
+        if (!FastTimeActive()) ApplyTimescale(p, _mapTimescale); else StopTimescale(p);
+    }
+    private void SetTimescale(CCSPlayerController? p, float value, bool enable)
+    {
+        if (!_plugin.NeedPermission(p, "css_ze_timescale")) return;
+        if (!float.IsFinite(value) || value < MinMapTimescale || value > MaxMapTimescale)
+        { _plugin.Reply(p, $"加速倍数必须在 {MinMapTimescale:0.#}～{MaxMapTimescale:0.#} 之间。"); return; }
+        _mapTimescale = MathF.Round(value, 2);
+        if (enable || FastTimeActive()) ApplyTimescale(p, _mapTimescale);
+        else _plugin.Reply(p, $"已设置加速倍数 {_mapTimescale:0.##}x；下次开启（!ze_timescale）时生效。");
+    }
+    private void ApplyTimescale(CCSPlayerController? p, float value)
+    {
         // host_timescale is cheat protected: it only takes effect while sv_cheats is 1.
         // Remember whether this command had to enable cheats so "off" can restore the server.
-        if (!FastTimeActive())
+        if (ConVar.Find("sv_cheats")?.GetPrimitiveValue<bool>() != true)
         {
-            if (ConVar.Find("sv_cheats")?.GetPrimitiveValue<bool>() != true)
-            {
-                Server.ExecuteCommand("sv_cheats 1");
-                _timescaleEnabledCheats = true;
-            }
-            Server.ExecuteCommand("host_timescale " + FastMapTimescale.ToString("0.##", CultureInfo.InvariantCulture));
-            Audit(p, "timescale:" + FastMapTimescale.ToString("0.##", CultureInfo.InvariantCulture));
-            _plugin.Reply(p, $"地图时间加速 {FastMapTimescale:0.##}x（所有人：移动、物理、脚本同步加速）；再次执行恢复正常速度。");
-            return;
+            Server.ExecuteCommand("sv_cheats 1");
+            _timescaleEnabledCheats = true;
         }
+        Server.ExecuteCommand("host_timescale " + value.ToString("0.##", CultureInfo.InvariantCulture));
+        Audit(p, "timescale:" + value.ToString("0.##", CultureInfo.InvariantCulture));
+        _plugin.Reply(p, $"地图时间加速 {value:0.##}x（所有人：移动、物理、脚本同步加速）；!ze_timescale 关闭，!ze_timescale <倍数> 修改。");
+    }
+    private void StopTimescale(CCSPlayerController? p)
+    {
+        if (!_plugin.NeedPermission(p, "css_ze_timescale")) return;
         Server.ExecuteCommand("host_timescale 1");
         if (_timescaleEnabledCheats)
         {

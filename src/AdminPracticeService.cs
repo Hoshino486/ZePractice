@@ -72,7 +72,7 @@ public sealed partial class AdminPracticeService : IDisposable
         Register("css_ze_installed_maps", "服主：查看和立即切换已安装地图", (p, c) => ShowInstalledMaps(p, c.ArgCount > 1 ? c.GetArg(1) : ""));
         Register("css_ze_map", "仅服主：指定地图名.vpk 直接切换，无需投票/RTV", MapCommand);
         Register("css_ze_reload", "管理：重载地图配置", (p, _) => Reload(p));
-        Register("css_ze_timescale", "仅服主：加速/恢复正常地图时间（所有人）", (p, _) => ToggleTimescale(p));
+        Register("css_ze_timescale", "仅服主：加速/恢复正常地图时间（所有人）；可带倍数如 2.5", TimescaleCommand);
         _plugin.AddCommandListener("say", OnSay, HookMode.Pre);
         _plugin.AddCommandListener("say_team", OnSayTeam, HookMode.Pre);
         _plugin.RegisterListener<Listeners.OnClientAuthorized>(OnAuthorized);
