@@ -13,7 +13,7 @@ namespace ZePractice;
 public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePracticeConfig>
 {
     public override string ModuleName => "ZE Practice · FYS Config Adapter";
-    public override string ModuleVersion => "1.7.26";
+    public override string ModuleVersion => "1.7.27";
     public override string ModuleAuthor => "Local ZE Server";
     public override string ModuleDescription => "无奖励的 ZE 跑图、管理、Boss、地图翻译与 FYS 配置兼容";
     public ZePracticeConfig Config { get; set; } = new();
@@ -29,6 +29,7 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
     private GrenadeImmunityService? _grenadeImmunity;
     private MapIdentityService? _mapIdentity;
     private WorkshopUpdateService? _workshopUpdates;
+    private WatermarkService? _watermark;
     private ThirdPersonService? _thirdPerson;
     public bool ThirdPersonEnabled(CCSPlayerController p) => _thirdPerson?.Enabled(p) == true;
     private CommanderService? _commander;
@@ -118,9 +119,10 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
         _serverDiagnostics = new(this); _serverDiagnostics.Initialize();
         _plates = new ViewerPlateService(this); _plates.Initialize();
         _teammateTags = new(this); _teammateTags.Initialize();
+        _watermark = new(this); _watermark.Initialize();
         _workshopUpdates = new(this); _workshopUpdates.Initialize();
         RegisterListener<Listeners.OnMapStart>(StartMap);
-        RegisterListener<Listeners.OnMapEnd>(() => { _mapGeneration++; _practiceBots?.OnMapEnd(); _movementHud?.OnMapEnd(); _serverDiagnostics?.OnMapEnd(); _plates?.OnMapEnd(); _thirdPerson?.Reset(false); _commander?.OnMapEnd(); _serverModels?.OnMapEnd(); _mapIdentity?.OnMapEnd(); _roundGuard?.OnMapEnd(); _publicGameplay?.OnMapEnd(); _mapVote?.OnMapEnd(); _mapMarkers?.OnMapEnd(); _grenadeImmunity?.OnMapEnd(); });
+        RegisterListener<Listeners.OnMapEnd>(() => { _mapGeneration++; _practiceBots?.OnMapEnd(); _movementHud?.OnMapEnd(); _serverDiagnostics?.OnMapEnd(); _plates?.OnMapEnd(); _thirdPerson?.Reset(false); _commander?.OnMapEnd(); _serverModels?.OnMapEnd(); _mapIdentity?.OnMapEnd(); _roundGuard?.OnMapEnd(); _publicGameplay?.OnMapEnd(); _mapVote?.OnMapEnd(); _mapMarkers?.OnMapEnd(); _grenadeImmunity?.OnMapEnd(); _watermark?.OnMapEnd(); });
         RegisterEventHandler<EventRoundStart>((ev, info) =>
         {
             _map.OnRoundStart(); _boss.OnRoundStart(); _admin.OnRoundStart(); _gameplay.OnRoundStart(); _items.OnRoundStart();
@@ -133,9 +135,10 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
         });
         RegisterEventHandler<EventPlayerSpawn>((ev, info) =>
         {
-            if (IsRealPlayer(ev.Userid)) { _admin.OnPlayerSpawn(ev.Userid!); _gameplay.OnPlayerSpawn(ev.Userid!); }
+            if (IsRealPlayer(ev.Userid)) { _admin.OnPlayerSpawn(ev.Userid!); _gameplay.OnPlayerSpawn(ev.Userid!); _watermark?.OnPlayerSpawn(ev.Userid); }
             return HookResult.Continue;
         });
+        AddZeCommand("ze_watermark", " 重新显示插件署名", (p, c) => { if (!NeedPermission(p, "css_ze_watermark")) return; _watermark?.Replay(p is null ? null : (IsRealPlayer(p) ? p : null)); });
         AddZeCommand("css_zestatus", "Show map adapter status", (p,c) => ShowStatus(p));
         AddZeCommand("css_zereload", "Reload original FYS configurations", (p,c) =>
         {
@@ -166,6 +169,7 @@ public sealed partial class ZePracticePlugin : BasePlugin, IPluginConfig<ZePract
         _thirdPerson?.Reset(false);
         _commander?.OnMapStart(); _serverModels?.OnMapStart();
         _movementHud?.OnMapStart(); _serverDiagnostics?.OnMapStart(); _plates?.OnMapStart(); _teammateTags?.OnMapStart();
+        _watermark?.OnMapStart();
         // Engine/CS2Fixes map configs may execute after OnMapStart. Apply our chosen profile last.
         AddTimer(3f, () => { if (_mapGeneration == generation) { ApplyBaseFeatures(); _map?.ApplyCurrentMap(); _publicGameplay?.ReapplyRules(); if (IsPractice) Server.ExecuteCommand("mp_warmup_end"); ShowStatus(null); } }, TimerFlags.STOP_ON_MAPCHANGE);
     }

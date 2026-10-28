@@ -38,6 +38,7 @@ public sealed class ZePracticeConfig : BasePluginConfig
     public CommanderOptions Commander { get; set; } = new();
     public ServerModelOptions ServerModels { get; set; } = new();
     public PracticeBotOptions PracticeBots { get; set; } = new();
+    public WatermarkOptions Watermark { get; set; } = new();
 }
 
 public sealed class PracticeBotOptions
@@ -153,5 +154,27 @@ public sealed class PublicGameplayOptions
             !float.IsFinite(DroppedGunLifetimeSeconds) || DroppedGunLifetimeSeconds is < 1 or > 3600 ||
             MaximumRoundMinutes is < 1 or > 1440)
             throw new InvalidDataException("PublicGameplay contains an invalid server limit.");
+    }
+}
+
+/// <summary>服务器署名：加载插件后在进图和出生时提示制作人。</summary>
+public sealed class WatermarkOptions
+{
+    public bool Enabled { get; set; } = true;
+    public string Headline { get; set; } = "跑图插件制作";
+    public string Author { get; set; } = "赛博刹那";
+    public bool ShowInChat { get; set; } = true;
+    public bool OnEverySpawn { get; set; } = false;
+    public float MapStartDelaySeconds { get; set; } = 4f;
+    public float MapStartSeconds { get; set; } = 8f;
+    public float SpawnSeconds { get; set; } = 4f;
+
+    public void Validate()
+    {
+        if (MapStartDelaySeconds is < 0 or > 30) throw new InvalidDataException("Watermark.MapStartDelaySeconds must be 0..30.");
+        if (MapStartSeconds is < 1 or > 20) throw new InvalidDataException("Watermark.MapStartSeconds must be 1..20.");
+        if (SpawnSeconds is < 1 or > 20) throw new InvalidDataException("Watermark.SpawnSeconds must be 1..20.");
+        if ((Headline ?? string.Empty).Length > 40) throw new InvalidDataException("Watermark.Headline is too long.");
+        if ((Author ?? string.Empty).Length > 40) throw new InvalidDataException("Watermark.Author is too long.");
     }
 }

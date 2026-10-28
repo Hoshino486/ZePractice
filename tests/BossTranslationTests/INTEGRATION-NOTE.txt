@@ -1,0 +1,4 @@
+URGENT integration fact: official Source2ZE/CS2Fixes main/src/entwatch.cpp line 61 declares:
+CConVar<bool> g_cvarEnableEntWatch("entwatch_enable", FCVAR_NONE, "INCOMPATIBLE WITH CS#. Whether to enable EntWatch features", false);
+https://raw.githubusercontent.com/Source2ZE/CS2Fixes/main/src/entwatch.cpp
+Verified web source turn0view0 (2026-10-11). Do not enable native CS2Fixes EntWatch alongside CSS. Boss/translation service will use separate plain TextMsg center HUD by default (not survival HTML HUD) but this does not cure native EntWatch incompatibility. Root must account for gameplay EntWatch implementation dependency before deployment. No files outside subagent area edited, no server actions.

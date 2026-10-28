@@ -20,6 +20,32 @@
 | **诊断 HUD** | 彩色实体数、网络索引实体数、模拟均值/峰值、TPS、内存与人数；`!ze_diag`、`!ze_diag_status` |
 | **权限** | 服主 SteamID64 + CSS `@css/root`；处罚（ban/mute/gag）单独保存，不覆写 CS2Fixes |
 | **默认玩法** | 全员闪光/烟雾免疫、个人无扩散（保留后坐力）、T 只可持允许的刀、无限换队 |
+| **署名** | 进图与首次出生时在屏幕中央显示「跑图插件制作：赛博刹那」，聊天同步一条提示 |
+
+## 署名
+
+插件加载后会自动署名，不需要玩家敲任何命令：
+
+- **地图加载后**（等 4 秒避开开局提示）屏幕中央显示 8 秒：`跑图插件制作` / `赛博刹那` / `ZePractice v1.7.27`
+- **每位玩家首次出生**再显示 4 秒，晚进服的人也能看到
+- 同时发一条聊天提示
+
+想换文字或时长，改 `ZePractice.json`：
+
+```jsonc
+"Watermark": {
+  "Enabled": true,
+  "Headline": "跑图插件制作",
+  "Author": "赛博刹那",
+  "ShowInChat": true,
+  "OnEverySpawn": false,
+  "MapStartDelaySeconds": 4,
+  "MapStartSeconds": 8,
+  "SpawnSeconds": 4
+}
+```
+
+管理员随时可以用 `!ze_watermark` 再放一次。
 
 ## 依赖
 
@@ -62,6 +88,7 @@ SteamID64 可以用 `!ze_whoami` 查到。
 | `!zeweapon` / `!zebuy <名称>` | 补给武器与手雷 |
 | `!ze_god` / `!ze_noclip` / `!ze_save` / `!ze_tp` | 练习模式专用 |
 | `!ze_whoami` | 本人 SteamID64 与权限 |
+| `!ze_watermark` | 重新显示插件署名 |
 
 管理员（`!zeadmin` 打开菜单）：
 
