@@ -46,6 +46,8 @@ public sealed class WorkshopVoteService : IDisposable
         Register("css_ze_vote", "选下一张图 <WorkshopID>；每人一票，可改票", VoteCommand);
         Register("css_ze_vote_status", "候选选图和 RTV 进度", (player, _) => _plugin.Reply(player, Diagnostics()));
         Register("css_ze_workshop_now", "仅服主：立即加载 Workshop 地图 <ID>", ForceCommand);
+        Register("css_ze_rtv_force", "仅服主：强制通过 RTV 并换到当前票数最高的地图", (player, _) => ForceRtv(player));
+        Register("css_ze_forcertv", "仅服主：强制通过 RTV 并换图（别名）", (player, _) => ForceRtv(player));
         Register("css_ze_map_remove", "仅服主：从候选列表删除 <WorkshopID>", RemoveCommand);
         _plugin.AddCommandListener("say", Chat, HookMode.Pre);
         _plugin.AddCommandListener("say_team", Chat, HookMode.Pre);
@@ -229,6 +231,21 @@ public sealed class WorkshopVoteService : IDisposable
         ForceChange(player, "host_workshop_map " + identifier);
     }
 
+    public bool ForceRtv(CCSPlayerController? player)
+    {
+        if (!_plugin.Permissions.IsServerOwner(player)) { _plugin.Reply(player, "强制 RTV 仅服主可用。"); return false; }
+        if (!_active || _disposed) { _plugin.Reply(player, "当前没有可用的换图投票。"); return false; }
+        if (_executing) { _plugin.Reply(player, "换图指令已提交，正在等待引擎加载。"); return false; }
+        Refresh();
+        if (_ledger.Candidates.Count == 0) { _plugin.Reply(player, "换图列表为空：先 !ze_maps 添加候选，或 !ze_map <地图> 直接切图。"); return false; }
+        if (!_ledger.CanSelect) { _plugin.Reply(player, "还没有选图票：先 !ze_maps 选一张（只有一张候选时可直接强制）。"); return false; }
+        if (_pending) { _plugin.Reply(player, "换图倒计时已在进行中，稍等即可。"); return true; }
+        _ledger.ForceQuorum();
+        Broadcast($"服主强制 RTV（{_ledger.RtvCount}/{_ledger.PlayerCount}）。" + Diagnostics());
+        CheckProgress();
+        if (!_pending) { _plugin.Reply(player, "强制 RTV 未启动：当前没有在线真人，无法统计 RTV。"); return false; }
+        return true;
+    }
     public bool ForceChange(CCSPlayerController? player, string command)
     {
         if (!_active || _disposed || !_plugin.Permissions.IsServerOwner(player)) return false;

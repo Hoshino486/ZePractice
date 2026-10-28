@@ -21,6 +21,7 @@ public sealed partial class ZePracticePlugin
     public void NominateWorkshop(CCSPlayerController? player, string identifier) => _mapVote?.Nominate(player, identifier);
     public void OpenMapVoteMenu(CCSPlayerController? player, string search = "") => _mapVote?.ShowMenu(player, search);
     public bool ForceMapChange(CCSPlayerController? player, string command) => _mapVote?.ForceChange(player, command) == true;
+    public bool ForceRtv(CCSPlayerController? player) => _mapVote?.ForceRtv(player) == true;
     public void RestartManualRound(CCSPlayerController? player)
     {
         _roundGuard?.PermitManualEnd();

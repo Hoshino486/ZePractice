@@ -47,6 +47,8 @@ public sealed class WorkshopVoteLedger
     public bool Support(uint identity) => _voters.Contains(identity) && _rtv.Add(identity);
     public bool Withdraw(uint identity) => _rtv.Remove(identity);
     public void ClearRtv() => _rtv.Clear();
+    /// <summary>Owner override: mark every current voter as supporting RTV.</summary>
+    public void ForceQuorum() { _rtv.Clear(); _rtv.UnionWith(_voters); }
     public void ResetBallots() { _votes.Clear(); _rtv.Clear(); _voters.Clear(); }
     public void ResetForMap() { _candidates.Clear(); ResetBallots(); }
     public bool CanSelect => _candidates.Count == 1 || _candidates.Count > 1 && _votes.Count > 0;

@@ -79,7 +79,7 @@ public sealed class PermissionPolicy
         "css_ze_ban", "css_ze_mute", "css_ze_gag", "css_ze_unban", "css_ze_unmute",
         "css_ze_ungag", "css_ze_punishments", "css_ze_team",
         "css_ze_mode", "css_ze_map", "css_ze_reload", "css_ze_respawn_other",
-        "css_ze_permissions_reload", "css_ze_timescale",
+        "css_ze_permissions_reload", "css_ze_timescale", "css_ze_rtv_force", "css_ze_forcertv",
         "css_ze_time", "css_bossstatus", "css_bosshudmode", "css_itemwatch"
     ];
 

@@ -92,6 +92,7 @@ public sealed partial class AdminPracticeService
             Option(menu, p, "css_ze_timescale", $"服主：加速地图时间（所有人）[{state}]", who => ToggleTimescale(who));
             Option(menu, p, "css_ze_timescale", $"服主：设置加速倍数（当前 {_mapTimescale:0.##}x）", ShowTimescaleMenu);
         }
+        Option(menu, p, "css_ze_rtv_force", "服主：强制 RTV 换图（跳过 80% 门槛）", who => _plugin.ForceRtv(who));
         Option(menu, p, "css_itemwatch", "神器绑定诊断", who => RunOwnCommand(who, "css_itemwatch"));
         Option(menu, p, "css_ze_punishments", "查看有效封禁 / 禁言", ListPunishments);
         Option(menu, p, "css_ze_adminhelp", "管理员设置帮助", AdminHelp);
@@ -105,17 +106,36 @@ public sealed partial class AdminPracticeService
             _plugin.Reply(null, $"当前加速倍数 {_mapTimescale:0.##}x；用法：css_ze_timescale（开/关）或 css_ze_timescale <1.1～20>。");
             return;
         }
-        var menu = new ChatMenu($"地图时间加速（当前 {_mapTimescale:0.##}x）") { ExitButton = true };
-        Option(menu, p, "css_ze_timescale", $"{(FastTimeActive() ? "关闭加速" : "开启加速")}（{_mapTimescale:0.##}x）", who => ToggleTimescale(who));
+        // Persistent menu: selecting an option keeps the panel open and the labels below
+        // re-read the live state, so the toggle/倍數 never shows a stale value.
+        var menu = new PersistentChatMenu("地图时间加速（仅服主）");
+        LiveOption(menu, p, "css_ze_timescale",
+            () => $"{(FastTimeActive() ? "关闭加速" : "开启加速")}（设置 {_mapTimescale:0.##}x / 当前 {CurrentTimescale():0.##}x）",
+            who => { ToggleTimescale(who); menu.RefreshChatAfterCommand(who); });
         foreach (float preset in new[] { 1.5f, 2f, 3f, 4f, 5f, 10f })
         {
             float value = preset;
-            Option(menu, p, "css_ze_timescale", $"设为 {value:0.##}x 并立即生效", who => SetTimescale(who, value, true));
+            LiveOption(menu, p, "css_ze_timescale", () => $"设为 {value:0.##}x 并立即生效",
+                who => { SetTimescale(who, value, true); menu.RefreshChatAfterCommand(who); });
         }
-        Option(menu, p, "css_ze_timescale", "自定义倍数：聊天输入 !ze_timescale <1.1～20>",
-            who => _plugin.Reply(who, "用法：!ze_timescale 2.5（范围 1.1～20）；不带参数为开/关。"));
-        Option(menu, p, "css_zeadmin", "返回服务器管理", ShowAdmin);
+        LiveOption(menu, p, "css_ze_timescale", () => "自定义倍数：聊天输入 !ze_timescale <1.1～20>",
+            who => { _plugin.Reply(who, "用法：!ze_timescale 2.5（范围 1.1～20）；不带参数为开/关。"); menu.RefreshChatAfterCommand(who); });
+        menu.AddMenuOption("返回服务器管理", (who, _) => ShowAdmin(who));
         _plugin.OpenMenu(p, menu);
+    }
+    private ChatMenuOption LiveOption(PersistentChatMenu menu, CCSPlayerController owner, string? operation, Func<string> text, Action<CCSPlayerController> action, bool disabled = false)
+    {
+        bool allowed = operation == null ? _plugin.Permissions.HasAdminAccess(owner) : _plugin.Permissions.Allows(owner, ZeCommandText.Canonical(operation));
+        int ownerSlot = owner.Slot; int? ownerUserId = owner.UserId;
+        var option = menu.AddMenuOption(text(), (who, _) =>
+        {
+            if (_disposed || !ZePracticePlugin.IsRealPlayer(who) || who.Slot != ownerSlot || who.UserId != ownerUserId) return;
+            if (operation == null ? !NeedAdmin(who) : !_plugin.NeedPermission(who, operation)) return;
+            try { action(who); }
+            catch (Exception e) { _plugin.Logger.LogError(e, "Menu action failed: {MenuAction}", text()); _plugin.Reply(who, "操作失败，详情已写入服务器日志。"); }
+        }, disabled || !allowed);
+        menu.BindLabel(option, text);
+        return option;
     }
     private void ShowPlayers(CCSPlayerController p)
     {
