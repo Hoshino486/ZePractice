@@ -11,8 +11,11 @@ public sealed class MovementTelemetryLogic
     private Sample? _previous;
     private bool _jumping;
     private float _takeoff, _peak, _lastHeight;
+    // Recent positions measure the real displacement speed, so map/artifact speed boosts are
+    // visible even when the replicated velocity field itself is capped at the base maxspeed.
+    private readonly List<(double Time, Vector3 Position)> _recent = new(32);
     public Reading Current { get; private set; }
-    public void Reset() { _previous = null; _jumping = false; _takeoff = _peak = _lastHeight = 0; Current = default; }
+    public void Reset() { _previous = null; _jumping = false; _takeoff = _peak = _lastHeight = 0; _recent.Clear(); Current = default; }
     private static bool Finite(Vector3 v) => float.IsFinite(v.X) && float.IsFinite(v.Y) && float.IsFinite(v.Z);
     public Reading Update(Sample s)
     {
@@ -39,7 +42,21 @@ public sealed class MovementTelemetryLogic
         if (!s.Walking) { _jumping = false; _peak = _lastHeight = 0; }
         _previous = s;
         // Double intermediates keep even malformed finite velocities from overflowing the display.
-        float speed = (float)Math.Min(999999, Math.Sqrt((double)s.Velocity.X * s.Velocity.X + (double)s.Velocity.Y * s.Velocity.Y));
+        float velocitySpeed = (float)Math.Min(999999, Math.Sqrt((double)s.Velocity.X * s.Velocity.X + (double)s.Velocity.Y * s.Velocity.Y));
+        if (discontinuity) _recent.Clear();
+        _recent.Add((s.Time, s.Position));
+        while (_recent.Count > 2 && s.Time - _recent[0].Time > .25) _recent.RemoveAt(0);
+        float speed = velocitySpeed;
+        if (s.Walking && _recent.Count >= 2)
+        {
+            var first = _recent[0];
+            double window = s.Time - first.Time;
+            if (window >= .05)
+            {
+                double dx = s.Position.X - first.Position.X, dy = s.Position.Y - first.Position.Y;
+                speed = (float)Math.Min(999999, Math.Sqrt(dx * dx + dy * dy) / window);
+            }
+        }
         Current = new(speed, Math.Clamp(s.Velocity.Z, -999999, 999999), Math.Clamp(_jumping ? _peak : _lastHeight, 0, 999999), _jumping,
             !s.Walking ? "特殊移动" : discontinuity ? "已重置" : s.Grounded ? "地面" : _jumping ? "跳跃" : "空中");
         return Current;
