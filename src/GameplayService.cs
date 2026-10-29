@@ -251,7 +251,7 @@ public sealed partial class GameplayService : IDisposable
     }
     private HookResult OnBuy(CCSPlayerController? p,CommandInfo c)
     {
-        if(p is { IsValid: true, TeamNum: 2 }){_plugin.Reply(p,"僵尸只能使用刀，禁止购买枪械和补给。");return HookResult.Stop;}
+        if(p is { IsValid: true, TeamNum: 2 } && !_plugin.ZombieGearEnabled(p)){_plugin.Reply(p,"僵尸只能使用刀，禁止购买枪械和补给；可先用 !ze_zombiegear on 允许自己的僵尸购枪。");return HookResult.Stop;}
         if(c.ArgCount<2||ZeGameplayCatalog.FindSupply(c.GetArg(1)) is null)return HookResult.Continue;
         BuyByName(p,c.GetArg(1));return HookResult.Stop;
     }
