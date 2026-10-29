@@ -101,7 +101,7 @@ public sealed partial class PublicGameplayService
     {
         if (_disposed || !_active) return HookResult.Continue;
         var services = hook.GetParam<CCSPlayer_WeaponServices>(0);
-        if (!ZombiePawn(services.Pawn.Value) || CanCarry(hook.GetParam<CBasePlayerWeapon>(1))) return HookResult.Continue;
+        if (!ZombiePawn(services.Pawn.Value) || ZombieGear(services.Pawn.Value) || CanCarry(hook.GetParam<CBasePlayerWeapon>(1))) return HookResult.Continue;
         _blockedPickups++; hook.SetReturn(false); return HookResult.Stop;
     }
 
@@ -109,7 +109,7 @@ public sealed partial class PublicGameplayService
     {
         if (_disposed || !_active) return HookResult.Continue;
         var services = hook.GetParam<CCSPlayer_ItemServices>(0);
-        if (!ZombiePawn(services.Pawn.Value)) return HookResult.Continue;
+        if (!ZombiePawn(services.Pawn.Value) || ZombieGear(services.Pawn.Value)) return HookResult.Continue;
         var method = hook.GetParam<AcquireMethod>(2);
         var item = hook.GetParam<CEconItemView>(1);
         if (method == AcquireMethod.PickUp && ZombieWeaponPolicy.IsKnifeDefinition(item.ItemDefinitionIndex)) return HookResult.Continue;
@@ -120,7 +120,7 @@ public sealed partial class PublicGameplayService
     {
         if (_disposed || !_active) return HookResult.Continue;
         var services = new CCSPlayer_ItemServices(hook.GetParam<IntPtr>(0));
-        if (!ZombiePawn(services.Pawn.Value) || ZombieWeaponPolicy.IsKnifeClass(hook.GetParam<string>(1))) return HookResult.Continue;
+        if (!ZombiePawn(services.Pawn.Value) || ZombieGear(services.Pawn.Value) || ZombieWeaponPolicy.IsKnifeClass(hook.GetParam<string>(1))) return HookResult.Continue;
         _blockedGrants++; hook.SetReturn(IntPtr.Zero); return HookResult.Stop;
     }
 
@@ -128,13 +128,13 @@ public sealed partial class PublicGameplayService
     {
         if (_disposed || !_active) return HookResult.Continue;
         var services = hook.GetParam<CCSPlayer_WeaponServices>(0);
-        if (!ZombiePawn(services.Pawn.Value) || CanCarry(hook.GetParam<CBasePlayerWeapon>(1))) return HookResult.Continue;
+        if (!ZombiePawn(services.Pawn.Value) || ZombieGear(services.Pawn.Value) || CanCarry(hook.GetParam<CBasePlayerWeapon>(1))) return HookResult.Continue;
         _blockedEquips++; return HookResult.Stop;
     }
 
     private void EnforceZombieInventory(CCSPlayerController player, PlayerState state)
     {
-        if (player.TeamNum != 2 || !Alive(player) || state.ResettingTeam) return;
+        if (player.TeamNum != 2 || !Alive(player) || state.ResettingTeam || ZombieGearEnabled(player)) return;
         var pawn = player.PlayerPawn.Value!;
         if (pawn.WeaponServices == null || pawn.ItemServices == null) return;
         bool hasKnife = false;

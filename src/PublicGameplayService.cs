@@ -18,6 +18,8 @@ public sealed partial class PublicGameplayService : IDisposable
     private readonly Dictionary<string, CommandInfo.CommandCallback> _commands = new();
     private readonly Dictionary<string, (string Original, string Last)> _cvars = new();
     private readonly HashSet<string> _reported = new();
+    // Per-player opt-in: allow that player's zombie to pick up weapon-style map items and buy weapons.
+    private readonly HashSet<ulong> _zombieGear = new();
     private bool _active, _disposed;
     private int _generation;
     private int? _roundMinutes;
@@ -58,6 +60,15 @@ public sealed partial class PublicGameplayService : IDisposable
         }
         return state;
     }
+
+    private static ulong GearKey(CCSPlayerController player) =>
+        player.AuthorizedSteamID?.SteamId64 ?? (0x8000000000000000UL | (uint)player.Slot);
+    public bool ZombieGearEnabled(CCSPlayerController? player) =>
+        player is { IsValid: true } && _zombieGear.Contains(GearKey(player));
+    // Bypass the four zombie weapon guards for a player who opted in.
+    private bool ZombieGear(CBasePlayerPawn? pawn) =>
+        pawn is { IsValid: true } && pawn.Controller.Value?.As<CCSPlayerController>() is { IsValid: true } controller &&
+        ZombieGearEnabled(controller);
 
     public void Initialize()
     {

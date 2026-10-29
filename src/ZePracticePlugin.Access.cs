@@ -22,6 +22,7 @@ public sealed partial class ZePracticePlugin
     public void OpenMapVoteMenu(CCSPlayerController? player, string search = "") => _mapVote?.ShowMenu(player, search);
     public bool ForceMapChange(CCSPlayerController? player, string command) => _mapVote?.ForceChange(player, command) == true;
     public bool ForceRtv(CCSPlayerController? player) => _mapVote?.ForceRtv(player) == true;
+    public bool ZombieGearEnabled(CCSPlayerController? player) => _publicGameplay?.ZombieGearEnabled(player) == true;
     public void RestartManualRound(CCSPlayerController? player)
     {
         _roundGuard?.PermitManualEnd();

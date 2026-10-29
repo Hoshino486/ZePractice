@@ -43,6 +43,7 @@ public sealed partial class PublicGameplayService
         Live("css_ze_bhop", () => $"!ze_bhop 空格连跳 [{On(State(p).BunnyHop)}]");
         Live("css_ze_speed", () => $"!ze_speed 地速/垂速/跳高 [{On(_plugin.MovementHudEnabled(p))}]");
         Live("css_ze_diag", () => $"!ze_diag 服务器运行诊断 [{On(_plugin.DiagnosticsHudEnabled(p))}]");
+        Live("css_ze_zombiegear", () => $"!ze_zombiegear 僵尸可拾取神器/购买枪械 [{On(ZombieGearEnabled(p))}]");
         Run("css_ze_script_status", "!ze_script_status 地图脚本活动/异常统计");
         MenuOption(menu, p, "css_ze_bot_add", "!ze_bot_add 选择 Bot 阵营并在脚下添加", BotTeamMenu);
         MenuOption(menu, p, "css_ze_bot_hp", "!ze_bot_hp <数值> 下次放置的 Bot 血量", who => ValueMenu(who, "css_ze_bot_hp"));

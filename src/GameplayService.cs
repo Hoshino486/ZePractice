@@ -179,7 +179,7 @@ public sealed partial class GameplayService : IDisposable
     private bool NeedHuman(CCSPlayerController? p)
     {
         if(!ZePracticePlugin.IsRealPlayer(p)||!Alive(p)){_plugin.Reply(p,"需要存活玩家在游戏内使用。");return false;}
-        if(!ZombieWeaponPolicy.CanBuy(p!.TeamNum)){_plugin.Reply(p,"僵尸只能使用刀，禁止购买枪械和补给；切换 CT 后可购买。");return false;}
+        if(!ZombieWeaponPolicy.CanBuy(p!.TeamNum) && !_plugin.ZombieGearEnabled(p)){_plugin.Reply(p,"僵尸只能使用刀，禁止购买枪械和补给；可先用 !ze_zombiegear on 允许自己的僵尸购枪，或切换 CT。");return false;}
         return true;
     }
     private bool Throttle(CCSPlayerController p)

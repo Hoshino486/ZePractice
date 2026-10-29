@@ -24,6 +24,7 @@ public sealed partial class PublicGameplayService
         Register("css_ze_bhop", "个人按住空格连跳 <on|off>；第 5 跳强制降速", (player, command) => ToggleCommand(player, command, true));
         Register("css_ze_music", "个人地图声源音量 <0..1>", MusicCommand);
         Register("css_ze_hide", "仅隐藏范围内队友模型，保留姓名 <0..999>", HideCommand);
+        Register("css_ze_zombiegear", "所有人：允许自己的僵尸拾取枪械类神器并购买枪械 <on|off>", ZombieGearCommand);
         Register("css_ze_join", "所有人：切换自己的阵营 <t|ct|spec>", (player, command) => JoinTeam(player, command.ArgCount == 2 ? command.GetArg(1) : ""));
         Register("css_ze_roundtime", "所有人：设置当前地图回合分钟数，立即重设当前倒计时", RoundTimeCommand);
         Register("css_ze_endround", "所有人：结束当前回合并开启下一回合", (player, _) => _plugin.EndManualRound(player));
@@ -79,8 +80,21 @@ public sealed partial class PublicGameplayService
         _plugin.Reply(player, "个人穿墙：" + (state.Noclip ? "开启" : "关闭") + "。此命令对所有玩家开放。");
     }
 
-    private void ToggleCommand(CCSPlayerController? player, CommandInfo command, bool bunnyHop)
+    private void ZombieGearCommand(CCSPlayerController? player, CommandInfo command)
     {
+        if (!Player(player)) { _plugin.Reply(player, "该指令只对游戏内真人玩家生效。"); return; }
+        var key = GearKey(player!);
+        bool current = _zombieGear.Contains(key), enabled = !current;
+        if (command.ArgCount > 2 ||
+            command.ArgCount == 2 && !PublicGameplayLogic.TryToggle(command.GetArg(1), current, out enabled))
+        { _plugin.Reply(player, "用法：!ze_zombiegear [on|off]；省略参数切换开关。"); return; }
+        if (enabled) _zombieGear.Add(key); else _zombieGear.Remove(key);
+        _plugin.Reply(player, enabled
+            ? "已开启：你的僵尸现在可以拾取枪械类神器、购买枪械与补给；换图后保持，直到你关闭。"
+            : "已关闭：僵尸恢复只能使用刀，不能拾取神器或购买枪械。");
+    }
+
+    private void ToggleCommand(CCSPlayerController? player, CommandInfo command, bool bunnyHop)    {
         if (!Player(player)) { _plugin.Reply(player, "需要游戏内玩家。"); return; }
         var state = State(player!);
         bool current = bunnyHop ? state.BunnyHop : state.InfiniteMagazine;

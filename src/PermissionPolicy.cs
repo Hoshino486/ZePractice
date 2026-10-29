@@ -26,6 +26,7 @@ public sealed class PermissionPolicy
         "css_ze_speed", "css_ze_movement_status", "css_ze_diag", "css_ze_diag_status", "css_ze_script_status",
         "css_ze_bot_add", "css_ze_bot_hp", "css_ze_bot_move", "css_ze_bot_kill", "css_ze_bot_clear", "css_ze_bot_status",
         "css_ze_music", "css_ze_hide", "css_ze_join", "css_ze_roundtime", "css_ze_restart", "css_ze_endround",
+        "css_ze_zombiegear",
         "css_ze_workshop", "css_host_workshop_map", "css_ze_public_status",
         "css_ze_maps", "css_ze_vote", "css_rtv", "css_unrtv", "css_ze_vote_status", "css_ze_markers_status",
         "css_leader", "css_ze_leader", "css_unleader", "css_clearpoints", "css_ze_clearpoints", "css_ze_commander_status", "css_ze_model_status"
