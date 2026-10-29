@@ -20,8 +20,8 @@ public sealed class NoSpreadPredictionState
 
 public static class PersonalNoSpreadNativeData
 {
-    // CS2 1.41.9.2 / 2000935, Windows x64. Spread RVA 0xA08050, inaccuracy 0xA06AD0.
-    public const string ServerSha256 = "2A229DD46C8AF0B52C1F49A3E343B99D9FFE946C102C56102A45B00F6A52349C";
+    // CS2 1.41.9.3 / 2000938, Windows x64. Spread and inaccuracy are located by signature.
+    public const string ServerSha256 = "3788AFAA2DBCE98A7B2FA1E15B6B1A304759DD5B0F05802268952341B40777C4";
     public const string SpreadSignature = "48 63 91 70 0F 00 00 48 8B 81 20 03 00 00 85 D2 78 10 48 83 FA 02 73 0A F3 0F 10 84 90 50 07 00 00 C3";
     public const string InaccuracySignature = "48 89 5C 24 10 55 56 57 48 81 EC B0 00 00 00 44 0F 29 84 24 80 00 00 00 49 8B F0 48 8B EA 48 8B F9";
 
